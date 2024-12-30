@@ -1,0 +1,5 @@
+the create law and law_explanation node and their relationship part was commented!!!!
+must undo it if full_clear on neo4j database!
+
+models temp and text_processor_temp is only for training machine broken period, should delete after it
+temp.py is test code, should add to gitignore

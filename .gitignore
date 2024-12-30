@@ -1,0 +1,6 @@
+**/*.xlsx
+**/*.docx
+**/*.csv
+.env
+**/temp.py
+__pycache__
