@@ -3,3 +3,5 @@ must undo it if full_clear on neo4j database!
 
 models temp and text_processor_temp is only for training machine broken period, should delete after it
 temp.py is test code, should add to gitignore
+
+chunks do not have chunks id, should change schema of elastic and neo4j to add chunks id for better debug
