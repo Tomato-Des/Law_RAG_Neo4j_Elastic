@@ -4,8 +4,9 @@ from typing import List, Dict
 import re
 
 class Neo4jManager:
-    def __init__(self, uri: str, user: str, password: str):
+    def __init__(self, uri: str, user: str, password: str, logger=None):
         self.driver = GraphDatabase.driver(uri, auth=(user, password))
+        self.logger = logger or logging.getLogger()
 
     def close(self):
         if self.driver:
@@ -16,30 +17,71 @@ class Neo4jManager:
             session.run("""
                 MERGE (c:case_node {case_id: $case_id, case_text: $case_text})
                 """, case_id=case_id, case_text=case_text)
+            self.logger.info(f"Created case node for case_id: {case_id}")
 
     def create_chunk_node(self, case_id: int, chunk: str, chunk_type: str):
+        """Create chunk node with unique chunk ID"""
         with self.driver.session() as session:
+            # Generate a unique chunk ID
+            chunk_id = f"{case_id}-{chunk_type}-{self._generate_chunk_sequence(case_id, chunk_type)}"
+            
             if chunk_type == 'fact':
                 session.run("""
-                    MERGE (f:fact_text {case_id: $case_id, chunk: $chunk})
+                    MERGE (f:fact_text {case_id: $case_id, chunk_id: $chunk_id, chunk: $chunk})
                     WITH f
                     MATCH (c:case_node {case_id: $case_id})
                     MERGE (c)-[:fact_text_relation]->(f)
-                    """, case_id=case_id, chunk=chunk)
+                    """, case_id=case_id, chunk_id=chunk_id, chunk=chunk)
+                self.logger.info(f"Created fact chunk node with ID: {chunk_id}")
+                return chunk_id
             elif chunk_type == 'law':
                 session.run("""
-                    MERGE (l:law_text {case_id: $case_id, chunk: $chunk})
+                    MERGE (l:law_text {case_id: $case_id, chunk_id: $chunk_id, chunk: $chunk})
                     WITH l
                     MATCH (c:case_node {case_id: $case_id})
                     MERGE (c)-[:law_text_relation]->(l)
-                    """, case_id=case_id, chunk=chunk)
+                    """, case_id=case_id, chunk_id=chunk_id, chunk=chunk)
+                self.logger.info(f"Created law chunk node with ID: {chunk_id}")
+                return chunk_id
             elif chunk_type == 'compensation':
                 session.run("""
-                    MERGE (comp:compensation_text {case_id: $case_id, chunk: $chunk})
+                    MERGE (comp:compensation_text {case_id: $case_id, chunk_id: $chunk_id, chunk: $chunk})
                     WITH comp
                     MATCH (c:case_node {case_id: $case_id})
                     MERGE (c)-[:compensation_text_relation]->(comp)
-                    """, case_id=case_id, chunk=chunk)
+                    """, case_id=case_id, chunk_id=chunk_id, chunk=chunk)
+                self.logger.info(f"Created compensation chunk node with ID: {chunk_id}")
+                return chunk_id
+    def _generate_chunk_sequence(self, case_id: int, chunk_type: str) -> int:
+        """Generate sequence number for chunk ID"""
+        with self.driver.session() as session:
+            result = session.run("""
+                MATCH (n)
+                WHERE n.case_id = $case_id AND 
+                      (n:fact_text OR n:law_text OR n:compensation_text) AND
+                      n.chunk_id CONTAINS $prefix
+                RETURN COUNT(n) as count
+                """, case_id=case_id, prefix=f"{case_id}-{chunk_type}")
+            count = result.single()["count"]
+            return count + 1
+
+    def get_chunk_by_id(self, chunk_id: str):
+        """Retrieve chunk by its unique ID"""
+        with self.driver.session() as session:
+            result = session.run("""
+                MATCH (n) 
+                WHERE n.chunk_id = $chunk_id AND
+                      (n:fact_text OR n:law_text OR n:compensation_text)
+                RETURN n.chunk as chunk, labels(n)[0] as type
+                """, chunk_id=chunk_id)
+            record = result.single()
+            if record:
+                return {
+                    'chunk': record['chunk'],
+                    'type': record['type']
+                }
+            self.logger.warning(f"No chunk found with ID: {chunk_id}")
+            return None
 
     def create_law_relationships(self, case_id: int, law_number: str):
         with self.driver.session() as session:

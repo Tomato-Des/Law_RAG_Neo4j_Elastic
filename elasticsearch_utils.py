@@ -3,20 +3,22 @@ from elasticsearch import Elasticsearch
 from typing import List
 
 class ElasticsearchManager:
-    def __init__(self, host: str, username: str, password: str):
+    def __init__(self, host: str, username: str, password: str, logger=None):
         self.es = Elasticsearch(
             host,
             http_auth=(username, password),
             verify_certs=False
         )
         self.index_name = 'text_embeddings'
+        self.logger = logger or logging.getLogger()
 
     def setup_indices(self, dims: int):
-        """設置單一索引，包含類型標記"""
+        """設置單一索引，包含類型標記和chunk ID"""
         mapping = {
             "mappings": {
                 "properties": {
                     "case_id": {"type": "integer"},
+                    "chunk_id": {"type": "keyword"},  # New field for chunk ID
                     "text": {"type": "text"},
                     "text_type": {"type": "keyword"},  # fact, law, or compensation
                     "embedding": {
@@ -51,17 +53,19 @@ class ElasticsearchManager:
             print(f"創建新索引 {self.index_name}")
             self.es.indices.create(index=self.index_name, body=mapping)
 
-    def store_embedding(self, text_type: str, case_id: int, text: str, embedding: List[float]):
-        """存儲文本和 embedding，並標記類型"""
+    def store_embedding(self, text_type: str, case_id: int, chunk_id: str, text: str, embedding: List[float]):
+        """存儲文本和 embedding，並標記類型和chunk ID"""
         doc = {
             'case_id': case_id,
+            'chunk_id': chunk_id,  # Add chunk ID to document
             'text': text,
-            'text_type': text_type,  # fact, law, or compensation
+            'text_type': text_type,
             'embedding': embedding
         }
         
         result = self.es.index(index=self.index_name, body=doc)
         print(f"成功將 {text_type} embedding 存儲到 Elasticsearch，文檔 ID: {result['_id']}")
+        self.logger.info(f"成功將 {text_type} embedding 存儲到 Elasticsearch，文檔 ID: {result['_id']}")
 
         
     #搜尋相似文本，可以指定類型

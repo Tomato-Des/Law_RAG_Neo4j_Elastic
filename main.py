@@ -1,37 +1,72 @@
 # main.py
+import logging
+import sys
+from datetime import datetime
 import os
 import re
 from sklearn.metrics.pairwise import cosine_similarity
 from docx import Document
 import pandas as pd
 from dotenv import load_dotenv
-#from models import EmbeddingModel
-#from text_processor import TextProcessor
+from models import EmbeddingModel
+from text_processor import TextProcessor
 from elasticsearch_utils import ElasticsearchManager
 from neo4j_manager import Neo4jManager
 from typing import List, Dict
 import warnings
 
-from models_temp import EmbeddingModel
-from text_processor_temp import TextProcessor
+#from models_temp import EmbeddingModel
+#from text_processor_temp import TextProcessor
 
 warnings.filterwarnings("ignore")
+def setup_logging(case_id_range: str = None):
+    """Setup logging to both file and console"""
+    # Create timestamp for log filename
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"processing_log_{timestamp}"
+    if case_id_range:
+        filename += f"_cases_{case_id_range}"
+    filename += ".txt"
 
+    # Create logger
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+
+    # Create file handler
+    file_handler = logging.FileHandler(filename, encoding='utf-8')
+    file_handler.setLevel(logging.INFO)
+
+    # Create console handler
+    console_handler = logging.StreamHandler(sys.stdout)
+    console_handler.setLevel(logging.INFO)
+
+    # Create formatter
+    formatter = logging.Formatter('%(asctime)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    file_handler.setFormatter(formatter)
+    console_handler.setFormatter(formatter)
+
+    # Add handlers to logger
+    logger.addHandler(file_handler)
+    logger.addHandler(console_handler)
+
+    return logger
 class LegalRAGSystem:
     def __init__(self):
         load_dotenv()
-        
+        self.logger = setup_logging()
         # 初始化各個組件
         self.embedding_model = EmbeddingModel()
         self.es_manager = ElasticsearchManager(
             host="https://localhost:9200",
             username=os.getenv('ELASTIC_USER'),
-            password=os.getenv('ELASTIC_PASSWORD')
+            password=os.getenv('ELASTIC_PASSWORD'),
+            logger=self.logger
         )
         self.neo4j_manager = Neo4jManager(
             uri=os.getenv('NEO4J_URI'),
             user=os.getenv('NEO4J_USER'),
-            password=os.getenv('NEO4J_PASSWORD')
+            password=os.getenv('NEO4J_PASSWORD'),
+            logger=self.logger
         )
         
         # 初始化 Elasticsearch 索引
@@ -55,19 +90,17 @@ class LegalRAGSystem:
             chunks = self.chunk_text(case_text)
             for chunk in chunks:
                 chunk_type = TextProcessor.classify_chunk(chunk)
-                
-                # 創建 Neo4j 節點
-                self.neo4j_manager.create_chunk_node(case_id, chunk, chunk_type)
-                
-                # 生成並存儲 embedding
-                embedding = self.embedding_model.embed_texts([chunk])[0]
+                # Generate embedding
+                embedding = self.embedding_model.embed_texts([chunk])[0]              
+                # 創建 Neo4j 節點並獲取 chunk ID
+                chunk_id = self.neo4j_manager.create_chunk_node(case_id, chunk, chunk_type)
                 self.es_manager.store_embedding(
-                chunk_type,  # 直接傳入類型：fact, law, 或 compensation
-                case_id,
-                chunk,
-                embedding.tolist()
-                )
-                
+                    chunk_type,
+                    case_id,
+                    chunk_id,
+                    chunk,
+                    embedding.tolist()
+                )              
         except Exception as e:
             print(f"處理案件 {case_id} 時發生錯誤: {str(e)}")
             raise
@@ -80,8 +113,7 @@ class LegalRAGSystem:
                 return
             
             for law_number in law_numbers:
-                self.neo4j_manager.create_law_relationships(case_id, law_number)
-                
+                self.neo4j_manager.create_law_relationships(case_id, law_number)               
         except Exception as e:
             print(f"處理案件 {case_id} 的法條時發生錯誤: {str(e)}")
             raise
@@ -132,10 +164,12 @@ class LegalRAGSystem:
             max_case_id = self.neo4j_manager.get_max_case_id()
             start_case_id = max_case_id + 1
             print(f"\n當前最大 case_id 為 {max_case_id}，新資料將從 {start_case_id} 開始編號")
+            self.logger.info(f"\n當前最大 case_id 為 {max_case_id}，新資料將從 {start_case_id} 開始編號")
 
             choice = input("是否要繼續處理新的資料？(yes/no): ").strip().lower()
             if choice != 'yes':
                 print("程序終止")
+                self.logger.info("程序終止")
                 return
             
             ## 處理法條和說明文本
@@ -162,20 +196,21 @@ class LegalRAGSystem:
             column = input("Enter column name: ").strip()
             print(f"Available rows: 0 to {len(df)-1}")
             
+            
             start_row = int(input("Enter start row: ").strip())
             end_row = int(input("Enter end row: ").strip())
+            self.logger = setup_logging(f"{start_case_id+start_row}_to_{start_case_id+end_row}")
 
             # 處理案件
-            """for idx, (_, row) in enumerate(df[column][start_row:end_row+1].items(), start=start_row):
-                print(f"\n處理案件 {idx}...")
-                self.process_case_data(row, idx)"""
             for i, (_, row) in enumerate(df[column][start_row:end_row+1].items()):
                 current_case_id = start_case_id + i
                 print(f"\n處理案件 {current_case_id}...")
+                self.logger.info(f"\n處理案件 {current_case_id}...")
                 self.process_case_data(row, current_case_id)
 
             # 處理法條
             print("\n處理法條...")
+            self.logger.info("\n處理法條...")
             laws_file = input("Enter filename for used laws (XLSX): ").strip()
             xl = pd.ExcelFile(laws_file)
             print("Available sheets:", xl.sheet_names)
@@ -188,17 +223,16 @@ class LegalRAGSystem:
             print(f"Available rows: 0 to {len(laws_df)-1}")
             start_row = int(input("Enter start row: ").strip())
             end_row = int(input("Enter end row: ").strip())
-            
-            """for idx, (_, row) in enumerate(laws_df[column][start_row:end_row+1].items(), start=start_row):
-                print(f"\n處理案件 {idx} 的法條...")
-                self.process_used_laws(idx, row)"""         
+                    
             for i, (_, row) in enumerate(laws_df[column][start_row:end_row+1].items()):
                 current_case_id = start_case_id + i
                 print(f"\n處理案件 {current_case_id} 的法條...")
+                self.logger.info(f"\n處理案件 {current_case_id} 的法條...")
                 self.process_used_laws(current_case_id, row)
 
         except Exception as e:
             print(f"執行過程中發生錯誤: {str(e)}")
+            self.logger.error(f"執行過程中發生錯誤: {str(e)}")
         finally:
             self.close()
 
@@ -218,3 +252,5 @@ if __name__ == "__main__":
     seconds = int(elapsed_time % 60)
     
     print(f"\nTotal execution time: {hours}h {minutes}m {seconds}s")
+    logger = logging.getLogger()
+    logger.info(f"\nTotal execution time: {hours}h {minutes}m {seconds}s")

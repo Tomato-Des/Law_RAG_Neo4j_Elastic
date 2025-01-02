@@ -1,0 +1,2957 @@
+
+=== Law Comparison Tool ===
+Available sheets:['Sheet1']
+Available columns:['法條', 'Original Text']
+Available rows: 0 to 468
+
+=== Input Parameters ===
+File: lawnum_text(判例5.469).xlsx
+Sheet: Sheet1
+Column: 法條
+Rows: 0 to 468
+
+=== Starting Comparison ===
+
+=== Case 0 ===
+Excel laws: ['184', '193', '195']
+
+0-fact-1: Match ✓
+
+0-fact-2: Match ✓
+
+=== Case 1 ===
+Excel laws: ['184', '193', '195']
+
+1-fact-1: Match ✓
+
+1-fact-2: Match ✓
+
+1-fact-3: Match ✓
+
+=== Case 2 ===
+Excel laws: ['184', '195']
+
+2-fact-1: Match ✓
+
+2-fact-2: Match ✓
+
+2-fact-3: Match ✓
+
+=== Case 3 ===
+Excel laws: ['184', '193', '195']
+
+3-fact-1: Match ✓
+
+3-fact-2: Match ✓
+
+=== Case 4 ===
+Excel laws: ['184', '188', '193', '195']
+
+4-fact-1: Match ✓
+
+=== Case 5 ===
+Excel laws: ['184', '191-2', '195']
+
+5-fact-1: Match ✓
+
+5-fact-2: Match ✓
+
+=== Case 6 ===
+Excel laws: ['184', '193', '195', '213', '216']
+
+6-fact-1: Match ✓
+
+=== Case 7 ===
+Excel laws: ['184', '193', '195', '217']
+
+7-fact-1: Match ✓
+
+=== Case 8 ===
+Excel laws: ['184', '193', '195']
+
+8-fact-1: Match ✓
+
+=== Case 9 ===
+Excel laws: ['184', '193', '195', '217']
+
+9-fact-1: Match ✓
+
+=== Case 10 ===
+Excel laws: ['184', '191-2', '193', '195', '213']
+
+10-fact-1: Match ✓
+
+=== Case 11 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+11-fact-1: Match ✓
+
+11-fact-2: Match ✓
+
+=== Case 12 ===
+Excel laws: ['184', '191-2', '193', '195', '213']
+
+12-fact-1: Match ✓
+
+12-fact-2: Match ✓
+
+=== Case 13 ===
+Excel laws: ['184', '195', '217']
+
+13-fact-1: Match ✓
+
+13-fact-2: Match ✓
+
+=== Case 14 ===
+Excel laws: ['195']
+
+14-fact-1: Match ✓
+
+=== Case 15 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+15-fact-1: Match ✓
+
+=== Case 16 ===
+Excel laws: ['195']
+
+16-fact-1: Match ✓
+
+=== Case 17 ===
+Excel laws: ['184', '191-2', '193', '195', '217']
+
+17-fact-1: Match ✓
+
+17-fact-2: Match ✓
+
+17-fact-3: Match ✓
+
+=== Case 18 ===
+Excel laws: ['184', '193', '195', '217']
+
+18-fact-1: Match ✓
+
+=== Case 19 ===
+Excel laws: ['184', '193', '195']
+
+19-fact-1: Match ✓
+
+19-fact-2: Match ✓
+
+=== Case 20 ===
+Excel laws: ['191-2', '195']
+
+20-fact-1: Match ✓
+
+=== Case 21 ===
+Excel laws: ['184', '191-2', '193', '195', '213', '217']
+
+21-fact-1: Match ✓
+
+=== Case 22 ===
+Excel laws: ['184', '188', '191-2', '195']
+
+22-fact-1: Match ✓
+
+22-fact-2: Match ✓
+
+=== Case 23 ===
+Excel laws: ['184', '193', '195']
+
+23-fact-1: Match ✓
+
+=== Case 24 ===
+Excel laws: ['184', '193', '195']
+
+24-fact-1: Match ✓
+
+24-fact-2: Match ✓
+
+=== Case 25 ===
+Excel laws: ['184', '195']
+
+25-fact-1: Match ✓
+
+25-fact-2: Match ✓
+
+25-fact-3: Match ✓
+
+=== Case 26 ===
+Excel laws: ['184', '193', '195', '213']
+
+26-fact-1: Match ✓
+
+=== Case 27 ===
+Excel laws: ['184', '195']
+
+27-fact-1: Match ✓
+
+=== Case 28 ===
+Excel laws: ['184', '188', '191-2', '193', '195']
+
+28-fact-1: Match ✓
+
+=== Case 29 ===
+Excel laws: ['184', '191-2', '193', '195', '213', '216']
+
+29-fact-1: Match ✓
+
+=== Case 30 ===
+Excel laws: ['184', '191-2', '195', '217']
+
+30-fact-1: Match ✓
+
+=== Case 31 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+31-fact-1: Match ✓
+
+31-fact-2: Match ✓
+
+=== Case 32 ===
+Excel laws: ['184', '188', '195']
+
+32-fact-1: Match ✓
+
+=== Case 33 ===
+Excel laws: ['184', '188', '191-2', '193', '195']
+
+33-fact-1: Match ✓
+
+=== Case 34 ===
+Excel laws: ['184', '188', '191-2', '195', '213']
+
+34-fact-1: Match ✓
+
+=== Case 35 ===
+Excel laws: ['184', '188', '191-2', '193', '195']
+
+35-fact-1: Match ✓
+
+35-fact-2: Match ✓
+
+35-fact-3: Match ✓
+
+=== Case 36 ===
+Excel laws: ['184', '193', '195']
+
+36-fact-1: Match ✓
+
+=== Case 37 ===
+Excel laws: ['184', '193', '195', '213']
+
+37-fact-1: Match ✓
+
+=== Case 38 ===
+Excel laws: ['184', '191-2', '195']
+
+38-fact-1: Match ✓
+
+38-fact-2: Match ✓
+
+=== Case 39 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+39-fact-1: Match ✓
+
+=== Case 40 ===
+Excel laws: ['184', '195', '217']
+
+40-fact-1: Match ✓
+
+=== Case 41 ===
+Excel laws: ['184', '191-2', '195', '213', '217']
+
+41-fact-1: Match ✓
+
+41-fact-2: Match ✓
+
+=== Case 42 ===
+Excel laws: ['195', '217']
+
+42-fact-1: Match ✓
+
+=== Case 43 ===
+Excel laws: ['184', '193', '195']
+
+43-fact-1: Match ✓
+
+43-fact-2: Match ✓
+
+43-fact-3: Match ✓
+
+=== Case 44 ===
+Excel laws: ['184', '188', '195', '217']
+
+44-fact-1: Match ✓
+
+44-fact-2: Match ✓
+
+44-fact-3: Match ✓
+
+=== Case 45 ===
+Excel laws: ['184', '187', '195', '217']
+WARNING: No fact_text nodes found for case_id 45
+
+=== Case 46 ===
+Excel laws: ['195', '217']
+
+46-fact-1: Match ✓
+
+=== Case 47 ===
+Excel laws: ['184', '195']
+
+47-fact-1: Match ✓
+
+47-fact-2: Match ✓
+
+=== Case 48 ===
+Excel laws: ['188', '193', '195']
+
+48-fact-1: Match ✓
+
+48-fact-2: Match ✓
+
+=== Case 49 ===
+Excel laws: ['184', '191-2', '193', '195', '217']
+
+49-fact-1: Match ✓
+
+49-fact-2: Match ✓
+
+=== Case 50 ===
+Excel laws: ['184', '195']
+
+50-fact-1: Match ✓
+
+=== Case 51 ===
+Excel laws: ['195']
+
+51-fact-1: Match ✓
+
+=== Case 52 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+52-fact-1: Match ✓
+
+=== Case 53 ===
+Excel laws: ['195', '213']
+
+53-fact-1: Match ✓
+
+=== Case 54 ===
+Excel laws: ['184', '188', '191-2', '195', '213']
+
+54-fact-1: Match ✓
+
+54-fact-2: Match ✓
+
+=== Case 55 ===
+Excel laws: ['184', '191-2', '195', '213']
+
+55-fact-1: Match ✓
+
+55-fact-2: Match ✓
+
+55-fact-3: Match ✓
+
+=== Case 56 ===
+Excel laws: ['184', '195', '213', '216']
+
+56-fact-1: Match ✓
+
+=== Case 57 ===
+Excel laws: ['184', '195']
+
+57-fact-1: Match ✓
+
+=== Case 58 ===
+Excel laws: ['184', '191-2', '193', '195', '217']
+
+58-fact-1: Match ✓
+
+58-fact-2: Match ✓
+
+58-fact-3: Match ✓
+
+=== Case 59 ===
+Excel laws: ['184', '191-2', '195', '213']
+
+59-fact-1: Match ✓
+
+59-fact-2: Match ✓
+
+=== Case 60 ===
+Excel laws: ['195']
+
+60-fact-1: Match ✓
+
+=== Case 61 ===
+Excel laws: ['195']
+
+61-fact-1: Match ✓
+
+=== Case 62 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+62-fact-1: Match ✓
+
+62-fact-2: Match ✓
+
+=== Case 63 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+63-fact-1: Match ✓
+
+63-fact-2: Match ✓
+
+=== Case 64 ===
+Excel laws: ['184', '191-2', '195', '217']
+
+64-fact-1: Match ✓
+
+=== Case 65 ===
+Excel laws: ['184', '195', '217']
+
+65-fact-1: Match ✓
+
+65-fact-2: Match ✓
+
+65-fact-3: Match ✓
+
+=== Case 66 ===
+Excel laws: ['184', '195', '213', '216']
+WARNING: No fact_text nodes found for case_id 66
+
+=== Case 67 ===
+Excel laws: ['184', '191-2', '195', '213']
+
+67-fact-1: Match ✓
+
+67-fact-2: Match ✓
+
+=== Case 68 ===
+Excel laws: ['184', '188', '193', '195']
+
+68-fact-1: Match ✓
+
+=== Case 69 ===
+Excel laws: ['195', '217']
+
+69-fact-1: Match ✓
+
+69-fact-2: Match ✓
+
+=== Case 70 ===
+Excel laws: ['184', '193', '195']
+
+70-fact-1: Match ✓
+
+=== Case 71 ===
+Excel laws: ['193', '195']
+
+71-fact-1: Match ✓
+
+71-fact-2: Match ✓
+
+71-fact-3: Match ✓
+
+=== Case 72 ===
+Excel laws: ['184', '191-2', '193', '195', '216']
+
+72-fact-1: Match ✓
+
+=== Case 73 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+73-fact-1: Match ✓
+
+=== Case 74 ===
+Excel laws: ['195', '213']
+WARNING: No fact_text nodes found for case_id 74
+
+=== Case 75 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+75-fact-1: Match ✓
+
+=== Case 76 ===
+Excel laws: ['184', '191-2', '195']
+
+76-fact-1: Match ✓
+
+=== Case 77 ===
+Excel laws: ['184', '193', '195', '213']
+
+77-fact-1: Match ✓
+
+77-fact-2: Match ✓
+
+=== Case 78 ===
+Excel laws: ['184', '195']
+
+78-fact-1: Match ✓
+
+=== Case 79 ===
+Excel laws: ['184', '195']
+
+79-fact-1: Match ✓
+
+=== Case 80 ===
+Excel laws: ['184', '193', '195', '217']
+
+80-fact-1: Match ✓
+
+80-fact-2: Match ✓
+
+80-fact-3: Match ✓
+
+=== Case 81 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+81-fact-1: Match ✓
+
+81-fact-2: Match ✓
+
+=== Case 82 ===
+Excel laws: ['184', '195', '213']
+
+82-fact-1: Match ✓
+
+=== Case 83 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+83-fact-1: Match ✓
+
+83-fact-2: Match ✓
+
+=== Case 84 ===
+Excel laws: ['195']
+
+84-fact-1: Match ✓
+
+84-fact-2: Match ✓
+
+=== Case 85 ===
+Excel laws: ['184', '195', '217']
+
+85-fact-1: Match ✓
+
+=== Case 86 ===
+Excel laws: ['191-2', '195', '213']
+
+86-fact-1: Match ✓
+
+86-fact-2: Match ✓
+
+=== Case 87 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+87-fact-1: Match ✓
+
+=== Case 88 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+88-fact-1: Match ✓
+
+88-fact-2: Match ✓
+
+=== Case 89 ===
+Excel laws: ['195']
+
+89-fact-1: Match ✓
+
+89-fact-2: Match ✓
+
+=== Case 90 ===
+Excel laws: ['184', '191-2', '195']
+
+90-fact-1: Match ✓
+
+90-fact-2: Match ✓
+
+=== Case 91 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+91-fact-1: Match ✓
+
+=== Case 92 ===
+Excel laws: ['184', '191-2', '195']
+
+92-fact-1: Match ✓
+
+92-fact-2: Match ✓
+
+92-fact-3: Match ✓
+
+=== Case 93 ===
+Excel laws: ['184', '185', '193', '195']
+
+93-fact-1: Match ✓
+
+93-fact-2: Match ✓
+
+93-fact-3: Match ✓
+
+=== Case 94 ===
+Excel laws: ['184', '195']
+
+94-fact-1: Match ✓
+
+94-fact-2: Match ✓
+
+94-fact-3: Match ✓
+
+=== Case 95 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+95-fact-1: Match ✓
+
+=== Case 96 ===
+Excel laws: ['193', '195']
+
+96-fact-1: Match ✓
+
+96-fact-2: Match ✓
+
+=== Case 97 ===
+Excel laws: ['184', '193', '195', '216']
+
+97-fact-1: Match ✓
+
+97-fact-2: Match ✓
+
+=== Case 98 ===
+Excel laws: ['184', '188', '191-2', '193', '195']
+
+98-fact-1: Match ✓
+
+=== Case 99 ===
+Excel laws: ['184', '195']
+
+99-fact-1: Match ✓
+
+=== Case 100 ===
+Excel laws: ['184', '191-2', '193', '195', '213', '217']
+
+100-fact-1: Match ✓
+
+100-fact-2: Match ✓
+
+=== Case 101 ===
+Excel laws: ['184', '193', '195']
+
+101-fact-1: Match ✓
+
+=== Case 102 ===
+Excel laws: ['191-2', '193', '195']
+
+102-fact-1: Match ✓
+
+102-fact-2: Match ✓
+
+102-fact-3: Match ✓
+
+=== Case 103 ===
+Excel laws: ['184', '193', '195', '217']
+
+103-fact-1: Match ✓
+
+103-fact-2: Match ✓
+
+103-fact-3: Match ✓
+
+=== Case 104 ===
+Excel laws: ['184', '195', '216']
+
+104-fact-1: Match ✓
+
+104-fact-2: Match ✓
+
+=== Case 105 ===
+Excel laws: ['184', '191-2', '193', '195', '217']
+
+105-fact-1: Match ✓
+
+105-fact-2: Match ✓
+
+=== Case 106 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+106-fact-1: Match ✓
+
+106-fact-2: Match ✓
+
+=== Case 107 ===
+Excel laws: ['195']
+
+107-fact-1: Match ✓
+
+107-fact-2: Match ✓
+
+=== Case 108 ===
+Excel laws: ['195']
+
+108-fact-1: Match ✓
+
+=== Case 109 ===
+Excel laws: ['184', '191-2', '193', '195', '217']
+
+109-fact-1: Match ✓
+
+=== Case 110 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+110-fact-1: Match ✓
+
+=== Case 111 ===
+Excel laws: ['184', '193', '195']
+
+111-fact-1: Match ✓
+
+111-fact-2: Match ✓
+
+=== Case 112 ===
+Excel laws: ['184', '191-2', '195', '213', '216']
+
+112-fact-1: Match ✓
+
+=== Case 113 ===
+Excel laws: ['195', '213']
+
+113-fact-1: Match ✓
+
+113-fact-2: Match ✓
+
+113-fact-3: Match ✓
+
+=== Case 114 ===
+Excel laws: ['195']
+
+114-fact-1: Match ✓
+
+=== Case 115 ===
+Excel laws: ['184', '191-2', '195', '213', '216']
+
+115-fact-1: Match ✓
+
+115-fact-2: Match ✓
+
+=== Case 116 ===
+Excel laws: ['184', '195', '216', '217']
+
+116-fact-1: Match ✓
+
+=== Case 117 ===
+Excel laws: ['184', '195', '216']
+
+117-fact-1: Match ✓
+
+117-fact-2: Match ✓
+
+=== Case 118 ===
+Excel laws: ['184', '188', '191-2', '193', '195']
+
+118-fact-1: Match ✓
+
+118-fact-2: Match ✓
+
+=== Case 119 ===
+Excel laws: ['195']
+
+119-fact-1: Match ✓
+
+=== Case 120 ===
+Excel laws: ['184', '185', '188', '191-2', '195']
+WARNING: No fact_text nodes found for case_id 120
+
+=== Case 121 ===
+Excel laws: ['184', '187', '195', '217']
+
+121-fact-1: Match ✓
+
+=== Case 122 ===
+Excel laws: ['184', '191-2', '195']
+
+122-fact-1: Match ✓
+
+122-fact-2: Match ✓
+
+=== Case 123 ===
+Excel laws: ['184', '191-2', '195']
+
+123-fact-1: Match ✓
+
+=== Case 124 ===
+Excel laws: ['184', '195', '216']
+
+124-fact-1: Match ✓
+
+=== Case 125 ===
+Excel laws: ['184', '191-2', '193', '195', '217']
+
+125-fact-1: Match ✓
+
+125-fact-2: Match ✓
+
+=== Case 126 ===
+Excel laws: ['184', '193', '195', '217']
+
+126-fact-1: Match ✓
+
+126-fact-2: Match ✓
+
+=== Case 127 ===
+Excel laws: ['184', '191-2', '193', '195', '217']
+
+127-fact-1: Match ✓
+
+127-fact-2: Match ✓
+
+127-fact-3: Match ✓
+
+=== Case 128 ===
+Excel laws: ['184', '185', '191-2', '195', '213']
+
+128-fact-1: Match ✓
+
+128-fact-2: Match ✓
+
+=== Case 129 ===
+Excel laws: ['195']
+
+129-fact-1: Match ✓
+
+129-fact-2: Match ✓
+
+=== Case 130 ===
+Excel laws: ['184', '195', '217']
+
+130-fact-1: Match ✓
+
+130-fact-2: Match ✓
+
+=== Case 131 ===
+Excel laws: ['184', '185', '193', '195']
+
+131-fact-1: Match ✓
+
+=== Case 132 ===
+Excel laws: ['184', '195']
+
+132-fact-1: Match ✓
+
+=== Case 133 ===
+Excel laws: ['184', '191-2', '193', '195', '216', '217']
+
+133-fact-1: Match ✓
+
+133-fact-2: Match ✓
+
+133-fact-3: Match ✓
+
+133-fact-4: Match ✓
+
+133-fact-5: Match ✓
+
+=== Case 134 ===
+Excel laws: ['195', '217']
+
+134-fact-1: Match ✓
+
+134-fact-2: Match ✓
+
+=== Case 135 ===
+Excel laws: ['193', '195']
+
+135-fact-1: Match ✓
+
+135-fact-2: Match ✓
+
+135-fact-3: Match ✓
+
+=== Case 136 ===
+Excel laws: ['184', '193', '195', '217']
+
+136-fact-1: Match ✓
+
+136-fact-2: Match ✓
+
+=== Case 137 ===
+Excel laws: ['195']
+
+137-fact-1: Match ✓
+
+=== Case 138 ===
+Excel laws: ['184', '195']
+
+138-fact-1: Match ✓
+
+138-fact-2: Match ✓
+
+=== Case 139 ===
+Excel laws: ['184', '193', '195']
+WARNING: No fact_text nodes found for case_id 139
+
+=== Case 140 ===
+Excel laws: ['184', '188', '195', '213', '217']
+
+140-fact-1: Match ✓
+
+=== Case 141 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+141-fact-1: Match ✓
+
+=== Case 142 ===
+Excel laws: ['184', '193', '195', '217']
+
+142-fact-1: Match ✓
+
+=== Case 143 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+143-fact-1: Match ✓
+
+143-fact-2: Match ✓
+
+=== Case 144 ===
+Excel laws: ['184', '191-2', '195', '213']
+
+144-fact-1: Match ✓
+
+=== Case 145 ===
+Excel laws: ['184', '185', '193', '195', '213', '217']
+
+145-fact-1: Match ✓
+
+=== Case 146 ===
+Excel laws: ['195']
+
+146-fact-1: Match ✓
+
+=== Case 147 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+147-fact-1: Match ✓
+
+147-fact-2: Match ✓
+
+147-fact-3: Match ✓
+
+147-fact-4: Match ✓
+
+147-fact-5: Match ✓
+
+=== Case 148 ===
+Excel laws: ['184', '193', '195']
+
+148-fact-1: Match ✓
+
+=== Case 149 ===
+Excel laws: ['184', '195']
+
+149-fact-1: Match ✓
+
+149-fact-2: Match ✓
+
+149-fact-3: Match ✓
+
+=== Case 150 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+150-fact-1: Match ✓
+
+=== Case 151 ===
+Excel laws: ['184', '188', '195', '213', '217']
+
+151-fact-1: Match ✓
+
+=== Case 152 ===
+Excel laws: ['184', '195']
+
+152-fact-1: Match ✓
+
+=== Case 153 ===
+Excel laws: ['184', '191-2', '193', '195', '217']
+
+153-fact-1: Match ✓
+
+=== Case 154 ===
+Excel laws: ['184', '191-2', '195', '213', '216']
+
+154-fact-1: Match ✓
+
+154-fact-2: Match ✓
+
+=== Case 155 ===
+Excel laws: ['184', '193', '195']
+
+155-fact-1: Match ✓
+
+155-fact-2: Match ✓
+
+=== Case 156 ===
+Excel laws: ['184', '195']
+
+156-fact-1: Match ✓
+
+=== Case 157 ===
+Excel laws: ['184', '193', '195', '213']
+
+157-fact-1: Match ✓
+
+157-fact-2: Match ✓
+
+157-fact-3: Match ✓
+
+=== Case 158 ===
+Excel laws: ['184', '191-2', '195', '213']
+WARNING: No fact_text nodes found for case_id 158
+
+=== Case 159 ===
+Excel laws: ['184', '195']
+
+159-fact-1: Match ✓
+
+159-fact-2: Match ✓
+
+=== Case 160 ===
+Excel laws: ['184', '188', '191-2', '195', '213']
+
+160-fact-1: Match ✓
+
+160-fact-2: Match ✓
+
+=== Case 161 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+161-fact-1: Match ✓
+
+=== Case 162 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+162-fact-1: Match ✓
+
+=== Case 163 ===
+Excel laws: ['184', '191-2', '193', '195', '217']
+
+163-fact-1: Match ✓
+
+=== Case 164 ===
+Excel laws: ['184', '193', '195', '217']
+
+164-fact-1: Match ✓
+
+=== Case 165 ===
+Excel laws: ['184', '188', '191-2', '193', '195']
+
+165-fact-1: Match ✓
+
+=== Case 166 ===
+Excel laws: ['184', '195']
+
+166-fact-1: Match ✓
+
+=== Case 167 ===
+Excel laws: ['184', '191-2', '195']
+
+167-fact-1: Match ✓
+
+167-fact-2: Match ✓
+
+=== Case 168 ===
+Excel laws: ['184', '191-2', '193', '195', '217']
+
+168-fact-1: Match ✓
+
+=== Case 169 ===
+Excel laws: ['184', '195']
+
+169-fact-1: Match ✓
+
+=== Case 170 ===
+Excel laws: ['184', '191-2', '195', '213']
+
+170-fact-1: Match ✓
+
+=== Case 171 ===
+Excel laws: ['195']
+
+171-fact-1: Match ✓
+
+171-fact-2: Match ✓
+
+171-fact-3: Match ✓
+
+=== Case 172 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+172-fact-1: Match ✓
+
+=== Case 173 ===
+Excel laws: ['191-2', '195']
+
+173-fact-1: Match ✓
+
+173-fact-2: Match ✓
+
+=== Case 174 ===
+Excel laws: ['184', '191-2', '195', '213', '216']
+
+174-fact-1: Match ✓
+
+174-fact-2: Match ✓
+
+=== Case 175 ===
+Excel laws: ['184', '193', '195']
+
+175-fact-1: Match ✓
+
+=== Case 176 ===
+Excel laws: ['184', '191-2', '195']
+
+176-fact-1: Match ✓
+
+176-fact-2: Match ✓
+
+=== Case 177 ===
+Excel laws: ['184', '191-2', '195', '213']
+
+177-fact-1: Match ✓
+
+=== Case 178 ===
+Excel laws: ['184', '191-2', '193', '195', '217']
+
+178-fact-1: Match ✓
+
+=== Case 179 ===
+Excel laws: ['184', '195', '217']
+
+179-fact-1: Match ✓
+
+=== Case 180 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+180-fact-1: Match ✓
+
+180-fact-2: Match ✓
+
+=== Case 181 ===
+Excel laws: ['184', '185', '188', '191-2', '195']
+WARNING: No fact_text nodes found for case_id 181
+
+=== Case 182 ===
+Excel laws: ['184', '193', '195', '216']
+
+182-fact-1: Match ✓
+
+=== Case 183 ===
+Excel laws: ['184', '195']
+
+183-fact-1: Match ✓
+
+183-fact-2: Match ✓
+
+183-fact-3: Match ✓
+
+=== Case 184 ===
+Excel laws: ['184', '191-2', '195', '213', '216']
+
+184-fact-1: Match ✓
+
+184-fact-2: Match ✓
+
+=== Case 185 ===
+Excel laws: ['195']
+WARNING: No fact_text nodes found for case_id 185
+
+=== Case 186 ===
+Excel laws: ['184', '193', '195']
+
+186-fact-1: Match ✓
+
+=== Case 187 ===
+Excel laws: ['184', '193', '195', '213']
+
+187-fact-1: Match ✓
+
+187-fact-2: Match ✓
+
+187-fact-3: Match ✓
+
+=== Case 188 ===
+Excel laws: ['184', '191-2', '193', '195', '217']
+
+188-fact-1: Match ✓
+
+=== Case 189 ===
+Excel laws: ['184', '191-2', '193', '195', '216']
+
+189-fact-1: Match ✓
+
+189-fact-2: Match ✓
+
+189-fact-3: Match ✓
+
+=== Case 190 ===
+Excel laws: ['184', '187', '191-2', '193', '195']
+
+190-fact-1: Match ✓
+
+=== Case 191 ===
+Excel laws: ['184', '191-2', '193', '195', '217']
+
+191-fact-1: Match ✓
+
+=== Case 192 ===
+Excel laws: ['184', '191-2', '195', '213', '216']
+
+192-fact-1: Match ✓
+
+192-fact-2: Match ✓
+
+=== Case 193 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+193-fact-1: Match ✓
+
+=== Case 194 ===
+Excel laws: ['184', '191-2', '195', '213']
+
+194-fact-1: Match ✓
+
+=== Case 195 ===
+Excel laws: ['184', '187', '191-2', '193', '195']
+
+195-fact-1: Match ✓
+
+=== Case 196 ===
+Excel laws: ['184', '188', '191-2', '195', '213', '216']
+
+196-fact-1: Match ✓
+
+196-fact-2: Match ✓
+
+=== Case 197 ===
+Excel laws: ['184', '191-2', '195']
+
+197-fact-1: Match ✓
+
+=== Case 198 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+198-fact-1: Match ✓
+
+198-fact-2: Match ✓
+
+=== Case 199 ===
+Excel laws: ['184', '191-2', '195']
+
+199-fact-1: Match ✓
+
+199-fact-2: Match ✓
+
+199-fact-3: Match ✓
+
+=== Case 200 ===
+Excel laws: ['184', '193', '195', '217']
+
+200-fact-1: Match ✓
+
+200-fact-2: Match ✓
+
+200-fact-3: Match ✓
+
+=== Case 201 ===
+Excel laws: ['184', '188', '191-2', '195', '213', '217']
+
+201-fact-1: Match ✓
+
+201-fact-2: Match ✓
+
+201-fact-3: Match ✓
+
+=== Case 202 ===
+Excel laws: ['184', '195', '213']
+
+202-fact-1: Match ✓
+
+202-fact-2: Match ✓
+
+=== Case 203 ===
+Excel laws: ['184', '193', '195']
+
+203-fact-1: Match ✓
+
+203-fact-2: Match ✓
+
+=== Case 204 ===
+Excel laws: ['184', '195', '213']
+
+204-fact-1: Match ✓
+
+=== Case 205 ===
+Excel laws: ['184', '191-2', '195', '213']
+
+205-fact-1: Match ✓
+
+205-fact-2: Match ✓
+
+=== Case 206 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+206-fact-1: Match ✓
+
+=== Case 207 ===
+Excel laws: ['184', '195', '213']
+
+207-fact-1: Match ✓
+
+=== Case 208 ===
+Excel laws: ['191-2', '195']
+
+208-fact-1: Match ✓
+
+=== Case 209 ===
+Excel laws: ['184', '187', '191-2', '193', '195']
+
+209-fact-1: Match ✓
+
+209-fact-2: Match ✓
+
+=== Case 210 ===
+Excel laws: ['184', '193', '195']
+
+210-fact-1: Match ✓
+
+210-fact-2: Match ✓
+
+=== Case 211 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+211-fact-1: Match ✓
+
+211-fact-2: Match ✓
+
+211-fact-3: Match ✓
+
+=== Case 212 ===
+Excel laws: ['184', '193', '195']
+
+212-fact-1: Match ✓
+
+212-fact-2: Match ✓
+
+=== Case 213 ===
+Excel laws: ['184', '193', '195']
+
+213-fact-1: Match ✓
+
+213-fact-2: Match ✓
+
+=== Case 214 ===
+Excel laws: ['184', '193', '195']
+
+214-fact-1: Match ✓
+
+214-fact-2: Match ✓
+
+=== Case 215 ===
+Excel laws: ['184', '191-2', '193', '195', '216']
+
+215-fact-1: Match ✓
+
+215-fact-2: Match ✓
+
+=== Case 216 ===
+Excel laws: ['184', '195', '217']
+
+216-fact-1: Match ✓
+
+216-fact-2: Match ✓
+
+=== Case 217 ===
+Excel laws: ['184', '195', '217']
+
+217-fact-1: Match ✓
+
+=== Case 218 ===
+Excel laws: ['184', '193', '195', '217']
+
+218-fact-1: Match ✓
+
+=== Case 219 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+219-fact-1: Match ✓
+
+219-fact-2: Match ✓
+
+=== Case 220 ===
+Excel laws: ['188', '193', '195']
+
+220-fact-1: Match ✓
+
+220-fact-2: Match ✓
+
+220-fact-3: Match ✓
+
+=== Case 221 ===
+Excel laws: ['184', '195']
+
+221-fact-1: Match ✓
+
+=== Case 222 ===
+Excel laws: ['195']
+
+222-fact-1: Match ✓
+
+222-fact-2: Match ✓
+
+222-fact-3: Match ✓
+
+=== Case 223 ===
+Excel laws: ['184', '193', '195']
+WARNING: No fact_text nodes found for case_id 223
+
+=== Case 224 ===
+Excel laws: ['184', '193', '195']
+
+224-fact-1: Match ✓
+
+=== Case 225 ===
+Excel laws: ['184', '191-2', '195', '217']
+
+225-fact-1: Match ✓
+
+=== Case 226 ===
+Excel laws: ['195', '217']
+
+226-fact-1: Match ✓
+
+=== Case 227 ===
+Excel laws: ['184', '193', '195']
+
+227-fact-1: Match ✓
+
+=== Case 228 ===
+Excel laws: ['184', '193', '195']
+
+228-fact-1: Match ✓
+
+228-fact-2: Match ✓
+
+=== Case 229 ===
+Excel laws: ['184', '193', '195']
+
+229-fact-1: Match ✓
+
+=== Case 230 ===
+Excel laws: ['184', '195']
+
+230-fact-1: Match ✓
+
+=== Case 231 ===
+Excel laws: ['195', '217']
+
+231-fact-1: Match ✓
+
+=== Case 232 ===
+Excel laws: ['184', '191-2', '195']
+
+232-fact-1: Match ✓
+
+232-fact-2: Match ✓
+
+232-fact-3: Match ✓
+
+=== Case 233 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+233-fact-1: Match ✓
+
+233-fact-2: Match ✓
+
+=== Case 234 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+234-fact-1: Match ✓
+
+=== Case 235 ===
+Excel laws: ['184', '191-2', '195', '213']
+
+235-fact-1: Match ✓
+
+235-fact-2: Match ✓
+
+235-fact-3: Match ✓
+
+=== Case 236 ===
+Excel laws: ['184', '191-2', '193', '195', '213']
+
+236-fact-1: Match ✓
+
+=== Case 237 ===
+Excel laws: ['184', '193', '195']
+
+237-fact-1: Match ✓
+
+237-fact-2: Match ✓
+
+237-fact-3: Match ✓
+
+=== Case 238 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+238-fact-1: Match ✓
+
+238-fact-2: Match ✓
+
+=== Case 239 ===
+Excel laws: ['184', '191-2', '193', '195', '217']
+
+239-fact-1: Match ✓
+
+=== Case 240 ===
+Excel laws: ['184', '193', '195', '216']
+
+240-fact-1: Match ✓
+
+=== Case 241 ===
+Excel laws: ['184', '193', '195']
+
+241-fact-1: Match ✓
+
+241-fact-2: Match ✓
+
+=== Case 242 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+242-fact-1: Match ✓
+
+242-fact-2: Match ✓
+
+=== Case 243 ===
+Excel laws: ['184', '193', '195', '213']
+
+243-fact-1: Match ✓
+
+243-fact-2: Match ✓
+
+=== Case 244 ===
+Excel laws: ['184', '191-2', '193', '195', '213']
+
+244-fact-1: Match ✓
+
+244-fact-2: Match ✓
+
+=== Case 245 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+245-fact-1: Match ✓
+
+245-fact-2: Match ✓
+
+245-fact-3: Match ✓
+
+=== Case 246 ===
+Excel laws: ['184', '188', '195']
+
+246-fact-1: Match ✓
+
+=== Case 247 ===
+Excel laws: ['184', '191-2', '195', '213', '217']
+
+247-fact-1: Match ✓
+
+=== Case 248 ===
+Excel laws: ['184', '187', '193', '195']
+
+248-fact-1: Match ✓
+
+=== Case 249 ===
+Excel laws: ['184', '187', '191-2', '193', '195', '217']
+
+249-fact-1: Match ✓
+
+249-fact-2: Match ✓
+
+249-fact-3: Match ✓
+
+=== Case 250 ===
+Excel laws: ['184', '187', '193', '195']
+
+250-fact-1: Match ✓
+
+250-fact-2: Match ✓
+
+=== Case 251 ===
+Excel laws: ['184', '193', '195']
+
+251-fact-1: Match ✓
+
+251-fact-2: Match ✓
+
+251-fact-3: Match ✓
+
+251-fact-4: Match ✓
+
+251-fact-5: Match ✓
+
+=== Case 252 ===
+Excel laws: ['184', '195', '217']
+
+252-fact-1: Match ✓
+
+=== Case 253 ===
+Excel laws: ['184', '193', '195']
+
+253-fact-1: Match ✓
+
+=== Case 254 ===
+Excel laws: ['184', '193', '195']
+
+254-fact-1: Match ✓
+
+254-fact-2: Match ✓
+
+=== Case 255 ===
+Excel laws: ['184', '193', '195']
+
+255-fact-1: Match ✓
+
+=== Case 256 ===
+Excel laws: ['184', '191-2', '193', '195', '217']
+
+256-fact-1: Match ✓
+
+=== Case 257 ===
+Excel laws: ['184', '195', '213']
+
+257-fact-1: Match ✓
+
+257-fact-2: Match ✓
+
+=== Case 258 ===
+Excel laws: ['184', '193', '195']
+
+258-fact-1: Match ✓
+
+258-fact-2: Match ✓
+
+=== Case 259 ===
+Excel laws: ['184', '195', '217']
+
+259-fact-1: Match ✓
+
+259-fact-2: Match ✓
+
+=== Case 260 ===
+Excel laws: ['184', '195', '217']
+
+260-fact-1: Match ✓
+
+260-fact-2: Match ✓
+
+=== Case 261 ===
+Excel laws: ['184', '193', '195', '217']
+
+261-fact-1: Match ✓
+
+261-fact-2: Match ✓
+
+=== Case 262 ===
+Excel laws: ['184', '195', '213']
+
+262-fact-1: Match ✓
+
+=== Case 263 ===
+Excel laws: ['195']
+
+263-fact-1: Match ✓
+
+=== Case 264 ===
+Excel laws: ['184', '193', '195']
+
+264-fact-1: Match ✓
+
+=== Case 265 ===
+Excel laws: ['184', '193', '195', '217']
+
+265-fact-1: Match ✓
+
+=== Case 266 ===
+Excel laws: ['184', '193', '195', '217']
+
+266-fact-1: Match ✓
+
+266-fact-2: Match ✓
+
+266-fact-3: Match ✓
+
+266-fact-4: Match ✓
+
+=== Case 267 ===
+Excel laws: ['184', '193', '195', '213']
+
+267-fact-1: Match ✓
+
+267-fact-2: Match ✓
+
+267-fact-3: Match ✓
+
+=== Case 268 ===
+Excel laws: ['184', '193', '195']
+
+268-fact-1: Match ✓
+
+=== Case 269 ===
+Excel laws: ['184', '195', '217']
+
+269-fact-1: Match ✓
+
+=== Case 270 ===
+Excel laws: ['184', '193', '195']
+
+270-fact-1: Match ✓
+
+=== Case 271 ===
+Excel laws: ['191-2', '195']
+
+271-fact-1: Match ✓
+
+271-fact-2: Match ✓
+
+271-fact-3: Match ✓
+
+=== Case 272 ===
+Excel laws: ['184', '191-2', '193', '195', '217']
+
+272-fact-1: Match ✓
+
+272-fact-2: Match ✓
+
+272-fact-3: Match ✓
+
+272-fact-4: Match ✓
+
+=== Case 273 ===
+Excel laws: ['184', '193', '195', '217']
+
+273-fact-1: Match ✓
+
+=== Case 274 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+274-fact-1: Match ✓
+
+=== Case 275 ===
+Excel laws: ['184', '191-2', '195']
+WARNING: No fact_text nodes found for case_id 275
+
+=== Case 276 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+276-fact-1: Match ✓
+
+=== Case 277 ===
+Excel laws: ['184', '193', '195']
+
+277-fact-1: Match ✓
+
+=== Case 278 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+278-fact-1: Match ✓
+
+=== Case 279 ===
+Excel laws: ['184', '193', '195', '217']
+
+279-fact-1: Match ✓
+
+=== Case 280 ===
+Excel laws: ['184', '193', '195']
+
+280-fact-1: Match ✓
+
+=== Case 281 ===
+Excel laws: ['184', '193', '195']
+
+281-fact-1: Match ✓
+
+=== Case 282 ===
+Excel laws: ['195']
+
+282-fact-1: Match ✓
+
+=== Case 283 ===
+Excel laws: ['184', '195']
+
+283-fact-1: Match ✓
+
+283-fact-2: Match ✓
+
+=== Case 284 ===
+Excel laws: ['184', '195']
+
+284-fact-1: Match ✓
+
+=== Case 285 ===
+Excel laws: ['184', '193', '195']
+
+285-fact-1: Match ✓
+
+285-fact-2: Match ✓
+
+=== Case 286 ===
+Excel laws: ['195']
+
+286-fact-1: Match ✓
+
+=== Case 287 ===
+Excel laws: ['184', '195']
+
+287-fact-1: Match ✓
+
+=== Case 288 ===
+Excel laws: ['184', '193', '195']
+
+288-fact-1: Match ✓
+
+=== Case 289 ===
+Excel laws: ['184', '195']
+
+289-fact-1: Match ✓
+
+289-fact-2: Match ✓
+
+289-fact-3: Match ✓
+
+=== Case 290 ===
+Excel laws: ['184', '195']
+WARNING: No fact_text nodes found for case_id 290
+
+=== Case 291 ===
+Excel laws: ['184', '193', '195']
+
+291-fact-1: Match ✓
+
+=== Case 292 ===
+Excel laws: ['184', '193', '195']
+
+292-fact-1: Match ✓
+
+292-fact-2: Match ✓
+
+=== Case 293 ===
+Excel laws: ['195', '213', '217']
+
+293-fact-1: Match ✓
+
+=== Case 294 ===
+Excel laws: ['184', '191-2', '195', '213']
+
+294-fact-1: Match ✓
+
+294-fact-2: Match ✓
+
+294-fact-3: Match ✓
+
+=== Case 295 ===
+Excel laws: ['184', '195']
+
+295-fact-1: Match ✓
+
+=== Case 296 ===
+Excel laws: ['184', '191-2', '193', '195', '213', '216']
+
+296-fact-1: Match ✓
+
+296-fact-2: Match ✓
+
+=== Case 297 ===
+Excel laws: ['184', '191-2', '193', '195', '216', '217']
+
+297-fact-1: Match ✓
+
+297-fact-2: Match ✓
+
+=== Case 298 ===
+Excel laws: ['195', '217']
+
+298-fact-1: Match ✓
+
+298-fact-2: Match ✓
+
+=== Case 299 ===
+Excel laws: ['184', '191-2', '193', '195', '216', '217']
+
+299-fact-1: Match ✓
+
+=== Case 300 ===
+Excel laws: ['184', '191-2', '193', '195', '217']
+
+300-fact-1: Match ✓
+
+=== Case 301 ===
+Excel laws: ['184', '193', '195', '217']
+
+301-fact-1: Match ✓
+
+301-fact-2: Match ✓
+
+=== Case 302 ===
+Excel laws: ['184', '193', '195']
+
+302-fact-1: Match ✓
+
+302-fact-2: Match ✓
+
+=== Case 303 ===
+Excel laws: ['184', '191-2', '195']
+
+303-fact-1: Match ✓
+
+303-fact-2: Match ✓
+
+303-fact-3: Match ✓
+
+303-fact-4: Match ✓
+
+=== Case 304 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+304-fact-1: Match ✓
+
+=== Case 305 ===
+Excel laws: ['184', '193', '195', '213']
+
+305-fact-1: Match ✓
+
+=== Case 306 ===
+Excel laws: ['184', '195']
+
+306-fact-1: Match ✓
+
+306-fact-2: Match ✓
+
+306-fact-3: Match ✓
+
+=== Case 307 ===
+Excel laws: ['184', '191-2', '195']
+
+307-fact-1: Match ✓
+
+=== Case 308 ===
+Excel laws: ['184', '195']
+
+308-fact-1: Match ✓
+
+=== Case 309 ===
+Excel laws: ['184', '191-2', '195', '216']
+
+309-fact-1: Match ✓
+
+=== Case 310 ===
+Excel laws: ['184', '185', '191-2', '195']
+
+310-fact-1: Match ✓
+
+310-fact-2: Match ✓
+
+310-fact-3: Match ✓
+
+=== Case 311 ===
+Excel laws: ['184', '191-2', '193', '195', '213']
+
+311-fact-1: Match ✓
+
+311-fact-2: Match ✓
+
+=== Case 312 ===
+Excel laws: ['184', '191-2', '195', '216']
+
+312-fact-1: Match ✓
+
+=== Case 313 ===
+Excel laws: ['184', '191-2', '193', '195', '213']
+
+313-fact-1: Match ✓
+
+=== Case 314 ===
+Excel laws: ['184', '191-2', '193', '195', '213', '217']
+
+314-fact-1: Match ✓
+
+=== Case 315 ===
+Excel laws: ['184', '193', '195']
+
+315-fact-1: Match ✓
+
+=== Case 316 ===
+Excel laws: ['184', '195']
+
+316-fact-1: Match ✓
+
+316-fact-2: Match ✓
+
+=== Case 317 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+317-fact-1: Match ✓
+
+317-fact-2: Match ✓
+
+317-fact-3: Match ✓
+
+317-fact-4: Match ✓
+
+=== Case 318 ===
+Excel laws: ['195', '217']
+
+318-fact-1: Match ✓
+
+318-fact-2: Match ✓
+
+=== Case 319 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+319-fact-1: Match ✓
+
+319-fact-2: Match ✓
+
+=== Case 320 ===
+Excel laws: ['184', '191-2', '195', '213']
+
+320-fact-1: Match ✓
+
+=== Case 321 ===
+Excel laws: ['184', '191-2', '195']
+
+321-fact-1: Match ✓
+
+321-fact-2: Match ✓
+
+=== Case 322 ===
+Excel laws: ['184', '191-2', '193', '195', '217']
+
+322-fact-1: Match ✓
+
+=== Case 323 ===
+Excel laws: ['184', '191-2', '195', '213']
+
+323-fact-1: Match ✓
+
+=== Case 324 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+324-fact-1: Match ✓
+
+324-fact-2: Match ✓
+
+=== Case 325 ===
+Excel laws: ['195', '213']
+
+325-fact-1: Match ✓
+
+=== Case 326 ===
+Excel laws: ['184', '193', '195']
+
+326-fact-1: Match ✓
+
+326-fact-2: Match ✓
+
+=== Case 327 ===
+Excel laws: ['195', '213']
+
+327-fact-1: Match ✓
+
+=== Case 328 ===
+Excel laws: ['184', '195']
+
+328-fact-1: Match ✓
+
+328-fact-2: Match ✓
+
+=== Case 329 ===
+Excel laws: ['184', '195']
+
+329-fact-1: Match ✓
+
+=== Case 330 ===
+Excel laws: ['195', '213', '217']
+
+330-fact-1: Match ✓
+
+330-fact-2: Match ✓
+
+330-fact-3: Match ✓
+
+=== Case 331 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+331-fact-1: Match ✓
+
+331-fact-2: Match ✓
+
+=== Case 332 ===
+Excel laws: ['184', '191-2', '195']
+
+332-fact-1: Match ✓
+
+=== Case 333 ===
+Excel laws: ['184', '193', '195', '217']
+
+333-fact-1: Match ✓
+
+333-fact-2: Match ✓
+
+=== Case 334 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+334-fact-1: Match ✓
+
+334-fact-2: Match ✓
+
+=== Case 335 ===
+Excel laws: ['184', '193', '195']
+
+335-fact-1: Match ✓
+
+335-fact-2: Match ✓
+
+=== Case 336 ===
+Excel laws: ['184', '195']
+
+336-fact-1: Match ✓
+
+336-fact-2: Match ✓
+
+=== Case 337 ===
+Excel laws: ['184', '191-2', '193', '195', '213']
+
+337-fact-1: Match ✓
+
+337-fact-2: Match ✓
+
+=== Case 338 ===
+Excel laws: ['184', '185', '191-2', '193', '195']
+
+338-fact-1: Match ✓
+
+338-fact-2: Match ✓
+
+=== Case 339 ===
+Excel laws: ['184', '191-2', '193', '195', '213']
+
+339-fact-1: Match ✓
+
+339-fact-2: Match ✓
+
+=== Case 340 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+340-fact-1: Match ✓
+
+340-fact-2: Match ✓
+
+=== Case 341 ===
+Excel laws: ['184', '195', '213']
+
+341-fact-1: Match ✓
+
+341-fact-2: Match ✓
+
+341-fact-3: Match ✓
+
+=== Case 342 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+342-fact-1: Match ✓
+
+=== Case 343 ===
+Excel laws: ['184', '191-2', '195', '216']
+
+343-fact-1: Match ✓
+
+343-fact-2: Match ✓
+
+=== Case 344 ===
+Excel laws: ['184', '191-2', '195', '213', '216']
+
+344-fact-1: Match ✓
+
+=== Case 345 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+345-fact-1: Match ✓
+
+345-fact-2: Match ✓
+
+345-fact-3: Match ✓
+
+=== Case 346 ===
+Excel laws: ['184', '191-2', '193', '195', '217']
+
+346-fact-1: Match ✓
+
+346-fact-2: Match ✓
+
+=== Case 347 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+347-fact-1: Match ✓
+
+347-fact-2: Match ✓
+
+=== Case 348 ===
+Excel laws: ['195']
+
+348-fact-1: Match ✓
+
+=== Case 349 ===
+Excel laws: ['184', '191-2', '193', '195', '217']
+
+349-fact-1: Match ✓
+
+349-fact-2: Match ✓
+
+=== Case 350 ===
+Excel laws: ['184', '195']
+
+350-fact-1: Match ✓
+
+=== Case 351 ===
+Excel laws: ['184', '195']
+
+351-fact-1: Match ✓
+
+=== Case 352 ===
+Excel laws: ['184', '191-2', '193', '195', '213']
+
+352-fact-1: Match ✓
+
+=== Case 353 ===
+Excel laws: ['184', '191-2', '195']
+
+353-fact-1: Match ✓
+
+=== Case 354 ===
+Excel laws: ['184', '195', '217']
+
+354-fact-1: Match ✓
+
+=== Case 355 ===
+Excel laws: ['184', '191-2', '193', '195', '217']
+
+355-fact-1: Match ✓
+
+=== Case 356 ===
+Excel laws: ['195', '213', '217']
+
+356-fact-1: Match ✓
+
+356-fact-2: Match ✓
+
+=== Case 357 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+357-fact-1: Match ✓
+
+357-fact-2: Match ✓
+
+=== Case 358 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+358-fact-1: Match ✓
+
+=== Case 359 ===
+Excel laws: ['184', '191-2', '195']
+
+359-fact-1: Match ✓
+
+=== Case 360 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+360-fact-1: Match ✓
+
+=== Case 361 ===
+Excel laws: ['184', '195', '213', '216']
+
+361-fact-1: Match ✓
+
+361-fact-2: Match ✓
+
+=== Case 362 ===
+Excel laws: ['184', '193', '195']
+
+362-fact-1: Match ✓
+
+362-fact-2: Match ✓
+
+=== Case 363 ===
+Excel laws: ['195']
+
+363-fact-1: Match ✓
+
+=== Case 364 ===
+Excel laws: ['184', '193', '195', '217']
+
+364-fact-1: Match ✓
+
+364-fact-2: Match ✓
+
+=== Case 365 ===
+Excel laws: ['184', '193', '195', '217']
+
+365-fact-1: Match ✓
+
+365-fact-2: Match ✓
+
+=== Case 366 ===
+Excel laws: ['184', '191-2', '195', '213']
+
+366-fact-1: Match ✓
+
+=== Case 367 ===
+Excel laws: ['184', '195', '217']
+
+367-fact-1: Match ✓
+
+367-fact-2: Match ✓
+
+=== Case 368 ===
+Excel laws: ['184', '195', '217']
+
+368-fact-1: Match ✓
+
+368-fact-2: Match ✓
+
+368-fact-3: Match ✓
+
+368-fact-4: Match ✓
+
+368-fact-5: Match ✓
+
+=== Case 369 ===
+Excel laws: ['184', '191-2', '195']
+
+369-fact-1: Match ✓
+
+=== Case 370 ===
+Excel laws: ['184', '195']
+
+370-fact-1: Match ✓
+
+370-fact-2: Match ✓
+
+=== Case 371 ===
+Excel laws: ['184', '193', '195', '213']
+
+371-fact-1: Match ✓
+
+371-fact-2: Match ✓
+
+=== Case 372 ===
+Excel laws: ['184', '191-2', '193', '195', '217']
+
+372-fact-1: Match ✓
+
+=== Case 373 ===
+Excel laws: ['184', '195']
+
+373-fact-1: Match ✓
+
+=== Case 374 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+374-fact-1: Match ✓
+
+=== Case 375 ===
+Excel laws: ['195']
+
+375-fact-1: Match ✓
+
+375-fact-2: Match ✓
+
+375-fact-3: Match ✓
+
+=== Case 376 ===
+Excel laws: ['184', '193', '195']
+
+376-fact-1: Match ✓
+
+376-fact-2: Match ✓
+
+376-fact-3: Match ✓
+
+376-fact-4: Match ✓
+
+=== Case 377 ===
+Excel laws: ['184', '195', '213']
+
+377-fact-1: Match ✓
+
+=== Case 378 ===
+Excel laws: ['184', '191-2', '193', '195', '213']
+
+378-fact-1: Match ✓
+
+378-fact-2: Match ✓
+
+=== Case 379 ===
+Excel laws: ['184', '191-2', '195']
+
+379-fact-1: Match ✓
+
+=== Case 380 ===
+Excel laws: ['184', '193', '195']
+
+380-fact-1: Match ✓
+
+=== Case 381 ===
+Excel laws: ['184', '191-2', '195', '217']
+
+381-fact-1: Match ✓
+
+=== Case 382 ===
+Excel laws: ['184', '191-2', '195']
+
+382-fact-1: Match ✓
+
+=== Case 383 ===
+Excel laws: ['184', '191-2', '195']
+
+383-fact-1: Match ✓
+
+=== Case 384 ===
+Excel laws: ['184', '195', '217']
+
+384-fact-1: Match ✓
+
+384-fact-2: Match ✓
+
+=== Case 385 ===
+Excel laws: ['184', '191-2', '195']
+
+385-fact-1: Match ✓
+
+385-fact-2: Match ✓
+
+=== Case 386 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+386-fact-1: Match ✓
+
+=== Case 387 ===
+Excel laws: ['184', '193', '195', '217']
+
+387-fact-1: Match ✓
+
+387-fact-2: Match ✓
+
+387-fact-3: Match ✓
+
+=== Case 388 ===
+Excel laws: ['184', '191-2', '193', '195', '217']
+
+388-fact-1: Match ✓
+
+388-fact-2: Match ✓
+
+=== Case 389 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+389-fact-1: Match ✓
+
+=== Case 390 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+390-fact-1: Match ✓
+
+390-fact-2: Match ✓
+
+=== Case 391 ===
+Excel laws: ['184', '193', '195']
+
+391-fact-1: Match ✓
+
+391-fact-2: Match ✓
+
+=== Case 392 ===
+Excel laws: ['193', '195']
+
+392-fact-1: Match ✓
+
+=== Case 393 ===
+Excel laws: ['184', '191-2', '195', '213', '216', '217']
+
+393-fact-1: Match ✓
+
+=== Case 394 ===
+Excel laws: ['184', '191-2', '195']
+
+394-fact-1: Match ✓
+
+=== Case 395 ===
+Excel laws: ['184', '191-2', '193', '195', '217']
+
+395-fact-1: Match ✓
+
+395-fact-2: Match ✓
+
+=== Case 396 ===
+Excel laws: ['195']
+
+396-fact-1: Match ✓
+
+=== Case 397 ===
+Excel laws: ['195']
+
+397-fact-1: Match ✓
+
+=== Case 398 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+398-fact-1: Match ✓
+
+398-fact-2: Match ✓
+
+=== Case 399 ===
+Excel laws: ['191-2', '195']
+
+399-fact-1: Match ✓
+
+=== Case 400 ===
+Excel laws: ['184', '195']
+
+400-fact-1: Match ✓
+
+=== Case 401 ===
+Excel laws: ['184', '193', '195']
+
+401-fact-1: Match ✓
+
+401-fact-2: Match ✓
+
+=== Case 402 ===
+Excel laws: ['184', '193', '195']
+
+402-fact-1: Match ✓
+
+402-fact-2: Match ✓
+
+=== Case 403 ===
+Excel laws: ['195', '217']
+
+403-fact-1: Match ✓
+
+=== Case 404 ===
+Excel laws: ['191-2', '193', '195', '213', '216']
+
+404-fact-1: Match ✓
+
+=== Case 405 ===
+Excel laws: ['184', '191-2', '195', '213']
+
+405-fact-1: Match ✓
+
+=== Case 406 ===
+Excel laws: ['184', '191-2', '195', '213']
+
+406-fact-1: Match ✓
+
+406-fact-2: Match ✓
+
+=== Case 407 ===
+Excel laws: ['184', '195']
+
+407-fact-1: Match ✓
+
+=== Case 408 ===
+Excel laws: ['184', '195']
+
+408-fact-1: Match ✓
+
+408-fact-2: Match ✓
+
+=== Case 409 ===
+Excel laws: ['195', '217']
+
+409-fact-1: Match ✓
+
+=== Case 410 ===
+Excel laws: ['184', '195']
+
+410-fact-1: Match ✓
+
+410-fact-2: Match ✓
+
+=== Case 411 ===
+Excel laws: ['184', '191-2', '195', '213', '216']
+
+411-fact-1: Match ✓
+
+=== Case 412 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+412-fact-1: Match ✓
+
+412-fact-2: Match ✓
+
+412-fact-3: Match ✓
+
+412-fact-4: Match ✓
+
+=== Case 413 ===
+Excel laws: ['184', '195']
+
+413-fact-1: Match ✓
+
+=== Case 414 ===
+Excel laws: ['193', '195']
+
+414-fact-1: Match ✓
+
+=== Case 415 ===
+Excel laws: ['193', '195']
+
+415-fact-1: Match ✓
+
+415-fact-2: Match ✓
+
+415-fact-3: Match ✓
+
+=== Case 416 ===
+Excel laws: ['184', '191-2', '195']
+
+416-fact-1: Match ✓
+
+416-fact-2: Match ✓
+
+=== Case 417 ===
+Excel laws: ['184', '191-2', '195']
+
+417-fact-1: Match ✓
+
+=== Case 418 ===
+Excel laws: ['191-2', '195', '213', '217']
+WARNING: No fact_text nodes found for case_id 418
+
+=== Case 419 ===
+Excel laws: ['184', '195']
+
+419-fact-1: Match ✓
+
+=== Case 420 ===
+Excel laws: ['184', '193', '195']
+
+420-fact-1: Match ✓
+
+420-fact-2: Match ✓
+
+=== Case 421 ===
+Excel laws: ['184', '193', '195']
+
+421-fact-1: Match ✓
+
+421-fact-2: Match ✓
+
+=== Case 422 ===
+Excel laws: ['193', '195', '217']
+
+422-fact-1: Match ✓
+
+422-fact-2: Match ✓
+
+422-fact-3: Match ✓
+
+=== Case 423 ===
+Excel laws: ['184', '195']
+
+423-fact-1: Match ✓
+
+=== Case 424 ===
+Excel laws: ['184', '193', '195']
+
+424-fact-1: Match ✓
+
+=== Case 425 ===
+Excel laws: ['184', '193', '195', '217']
+
+425-fact-1: Match ✓
+
+425-fact-2: Match ✓
+
+=== Case 426 ===
+Excel laws: ['184', '191-2', '195']
+
+426-fact-1: Match ✓
+
+=== Case 427 ===
+Excel laws: ['184', '193', '195']
+
+427-fact-1: Match ✓
+
+=== Case 428 ===
+Excel laws: ['184', '195']
+
+428-fact-1: Match ✓
+
+=== Case 429 ===
+Excel laws: ['195', '217']
+
+429-fact-1: Match ✓
+
+429-fact-2: Match ✓
+
+=== Case 430 ===
+Excel laws: ['184', '195']
+
+430-fact-1: Match ✓
+
+430-fact-2: Match ✓
+
+=== Case 431 ===
+Excel laws: ['184', '193', '195', '217']
+
+431-fact-1: Match ✓
+
+431-fact-2: Match ✓
+
+=== Case 432 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+432-fact-1: Match ✓
+
+=== Case 433 ===
+Excel laws: ['184', '191-2', '193', '195', '213']
+
+433-fact-1: Match ✓
+
+=== Case 434 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+434-fact-1: Match ✓
+
+=== Case 435 ===
+Excel laws: ['184', '193', '195', '217']
+
+435-fact-1: Match ✓
+
+435-fact-2: Match ✓
+
+=== Case 436 ===
+Excel laws: ['184', '193', '195']
+
+436-fact-1: Match ✓
+
+=== Case 437 ===
+Excel laws: ['184', '191-2', '195']
+
+437-fact-1: Match ✓
+
+437-fact-2: Match ✓
+
+=== Case 438 ===
+Excel laws: ['195', '217']
+
+438-fact-1: Match ✓
+
+438-fact-2: Match ✓
+
+=== Case 439 ===
+Excel laws: ['195']
+
+439-fact-1: Match ✓
+
+=== Case 440 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+440-fact-1: Match ✓
+
+=== Case 441 ===
+Excel laws: ['195']
+
+441-fact-1: Match ✓
+
+441-fact-2: Match ✓
+
+441-fact-3: Match ✓
+
+=== Case 442 ===
+Excel laws: ['184', '195', '217']
+WARNING: No fact_text nodes found for case_id 442
+
+=== Case 443 ===
+Excel laws: ['195']
+
+443-fact-1: Match ✓
+
+443-fact-2: Match ✓
+
+443-fact-3: Match ✓
+
+=== Case 444 ===
+Excel laws: ['184', '188', '191-2', '195', '213']
+WARNING: No fact_text nodes found for case_id 444
+
+=== Case 445 ===
+Excel laws: ['184', '188', '191-2', '193', '195']
+
+445-fact-1: Match ✓
+
+445-fact-2: Match ✓
+
+=== Case 446 ===
+Excel laws: ['184', '195']
+
+446-fact-1: Match ✓
+
+446-fact-2: Match ✓
+
+446-fact-3: Match ✓
+
+=== Case 447 ===
+Excel laws: ['184', '193', '195']
+
+447-fact-1: Match ✓
+
+=== Case 448 ===
+Excel laws: ['184', '187', '191-2', '195', '217']
+
+448-fact-1: Match ✓
+
+=== Case 449 ===
+Excel laws: ['195']
+
+449-fact-1: Match ✓
+
+449-fact-2: Match ✓
+
+=== Case 450 ===
+Excel laws: ['184', '185', '187', '193', '195']
+
+450-fact-1: Match ✓
+
+450-fact-2: Match ✓
+
+=== Case 451 ===
+Excel laws: ['184', '191-2', '193', '195']
+
+451-fact-1: Match ✓
+
+451-fact-2: Match ✓
+
+=== Case 452 ===
+Excel laws: ['184', '188', '191-2', '195', '217']
+
+452-fact-1: Match ✓
+
+=== Case 453 ===
+Excel laws: ['184', '193', '195', '213', '217']
+
+453-fact-1: Match ✓
+
+=== Case 454 ===
+Excel laws: ['195']
+
+454-fact-1: Match ✓
+
+=== Case 455 ===
+Excel laws: ['184', '193', '195']
+WARNING: No fact_text nodes found for case_id 455
+
+=== Case 456 ===
+Excel laws: ['195']
+
+456-fact-1: Match ✓
+
+=== Case 457 ===
+Excel laws: ['184', '191-2', '195', '213', '216']
+
+457-fact-1: Match ✓
+
+=== Case 458 ===
+Excel laws: ['184', '191-2', '195', '213', '216', '217']
+
+458-fact-1: Match ✓
+
+458-fact-2: Match ✓
+
+=== Case 459 ===
+Excel laws: ['195']
+
+459-fact-1: Match ✓
+
+=== Case 460 ===
+Excel laws: ['184', '195', '213', '216']
+
+460-fact-1: Match ✓
+
+460-fact-2: Match ✓
+
+=== Case 461 ===
+Excel laws: ['191-2', '195']
+
+461-fact-1: Match ✓
+
+=== Case 462 ===
+Excel laws: ['195']
+
+462-fact-1: Match ✓
+
+=== Case 463 ===
+Excel laws: ['184', '191-2', '195']
+WARNING: No fact_text nodes found for case_id 463
+
+=== Case 464 ===
+Excel laws: ['184', '191-2', '195']
+
+464-fact-1: Match ✓
+
+464-fact-2: Match ✓
+
+=== Case 465 ===
+Excel laws: ['184', '188', '191-2', '195']
+
+465-fact-1: Match ✓
+
+=== Case 466 ===
+Excel laws: ['184', '195']
+
+466-fact-1: Match ✓
+
+=== Case 467 ===
+Excel laws: ['184', '193', '195']
+
+467-fact-1: Match ✓
+
+467-fact-2: Match ✓
+
+467-fact-3: Match ✓
+
+=== Case 468 ===
+Excel laws: ['195']
+
+468-fact-1: Match ✓
+
+468-fact-2: Match ✓
+
+468-fact-3: Match ✓
+
+468-fact-4: Match ✓
+
+468-fact-5: Match ✓
+
+=== Comparison Summary ===
+Total cases checked: 469
+Total fact_text nodes checked: 755
+Cases with mismatches: 16
+Fact nodes with mismatches: 0
+Case match rate: 96.59%
+Fact node match rate: 100.00%
+
+
+Results have been saved to: law_comparison_20250102_141539.txt
