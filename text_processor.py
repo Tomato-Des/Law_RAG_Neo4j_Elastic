@@ -20,7 +20,7 @@ class TextProcessor:
             # Call Ollama with llama3.1 model
             response = requests.post('http://localhost:11434/api/generate', 
                                    json={
-                                       "model": "llama3.1:latest",
+                                       "model": "kenneth85/llama-3-taiwan:8b-instruct-dpo",
                                        "prompt": f"""將以下文本分類成3類中的一類: 
                                         'fact' (若文本是對案件的描述或解釋), 
                                         'law' (法條使用), 
