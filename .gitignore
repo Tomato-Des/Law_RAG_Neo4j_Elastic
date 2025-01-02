@@ -4,3 +4,4 @@
 .env
 **/temp.py
 __pycache__
+TEMP_PROMT.txt
