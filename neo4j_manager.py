@@ -6,7 +6,7 @@ import re
 class Neo4jManager:
     def __init__(self, uri: str, user: str, password: str, logger=None):
         self.driver = GraphDatabase.driver(uri, auth=(user, password))
-        self.logger = logger or logging.getLogger()
+        ##self.logger = logger or logging.getLogger()
 
     def close(self):
         if self.driver:
@@ -17,7 +17,7 @@ class Neo4jManager:
             session.run("""
                 MERGE (c:case_node {case_id: $case_id, case_text: $case_text})
                 """, case_id=case_id, case_text=case_text)
-            self.logger.info(f"Created case node for case_id: {case_id}")
+            ##self.logger.info(f"Created case node for case_id: {case_id}")
 
     def create_chunk_node(self, case_id: int, chunk: str, chunk_type: str):
         """Create chunk node with unique chunk ID"""
@@ -32,7 +32,7 @@ class Neo4jManager:
                     MATCH (c:case_node {case_id: $case_id})
                     MERGE (c)-[:fact_text_relation]->(f)
                     """, case_id=case_id, chunk_id=chunk_id, chunk=chunk)
-                self.logger.info(f"Created fact chunk node with ID: {chunk_id}")
+                #self.logger.info(f"Created fact chunk node with ID: {chunk_id}")
                 return chunk_id
             elif chunk_type == 'law':
                 session.run("""
@@ -41,7 +41,7 @@ class Neo4jManager:
                     MATCH (c:case_node {case_id: $case_id})
                     MERGE (c)-[:law_text_relation]->(l)
                     """, case_id=case_id, chunk_id=chunk_id, chunk=chunk)
-                self.logger.info(f"Created law chunk node with ID: {chunk_id}")
+                #self.logger.info(f"Created law chunk node with ID: {chunk_id}")
                 return chunk_id
             elif chunk_type == 'compensation':
                 session.run("""
@@ -50,7 +50,7 @@ class Neo4jManager:
                     MATCH (c:case_node {case_id: $case_id})
                     MERGE (c)-[:compensation_text_relation]->(comp)
                     """, case_id=case_id, chunk_id=chunk_id, chunk=chunk)
-                self.logger.info(f"Created compensation chunk node with ID: {chunk_id}")
+                #self.logger.info(f"Created compensation chunk node with ID: {chunk_id}")
                 return chunk_id
     def _generate_chunk_sequence(self, case_id: int, chunk_type: str) -> int:
         """Generate sequence number for chunk ID"""
@@ -80,7 +80,7 @@ class Neo4jManager:
                     'chunk': record['chunk'],
                     'type': record['type']
                 }
-            self.logger.warning(f"No chunk found with ID: {chunk_id}")
+            #self.logger.warning(f"No chunk found with ID: {chunk_id}")
             return None
 
     def create_law_relationships(self, case_id: int, law_number: str):

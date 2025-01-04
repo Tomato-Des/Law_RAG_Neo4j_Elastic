@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from retrieval_utils import LegalRetrievalSystem
 from elasticsearch_utils import ElasticsearchManager
 from neo4j_manager import Neo4jManager
-from models_temp import EmbeddingModel
+from models import EmbeddingModel
 
 def main():
     # 載入環境變數

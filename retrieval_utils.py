@@ -92,8 +92,10 @@ class LegalRetrievalSystem:
         for hit in results['hits']['hits']:
             case_id = hit['_source']['case_id']
             score = hit['_score']
+            text = hit['_source']['text']   #這裏是top k fact text的打印的部分
             found_cases.append((case_id, score))
             print(f"案件ID: {case_id}, 相似度分數: {score:.4f}")
+            print(f"案件内容：{text}\n")
         print("=== 搜尋結果結束 ===\n")
         
         return found_cases
@@ -162,37 +164,44 @@ class LegalRetrievalSystem:
             
             return law_contents
             
-    def generate_response(self, input_text: str, law_contents: List[str]) -> str:
+    def generate_response(self, input_text: str, parts: Dict[str, str], law_contents: List[str]) -> str:
         """生成最終回應"""
         # 準備 prompt
-        prompt = f"""你是一位台灣的專業的法律助理，請根據以下案件資訊和相關法條，生成一份完整的起訴書。
+        prompt = f"""你是一位台灣的專業的法律助理，請根據以下案件資訊和相關法條，以專業口吻生成一份完整的起訴書。
         
-案件資訊：
-{input_text}
+原始案件資訊：
+受傷情況：{parts.get('injuries', '未找到傷害情況')}
 
-相關法條：
-{' '.join(law_contents)}
+案件事實：{parts.get('facts', '未找到案件事實')}
+
+相關法條：{' '.join(law_contents)}
+
+賠償請求：{parts.get('claims', '未找到請求賠償')}
+
 
 請嚴格按照以下格式生成回應：
-1. 以"一、"開頭，說明案件事實，可直接使用原始案件描述。
-2. 以"二、"開頭，列舉相關法條依據，並解釋其適用性。格式為："按「法條內容」...民法第X條..."
-3. 接下來使用（一）（二）等分點列出各項賠償要求，每項都需要：
+
+1. 以"一、"開頭，以起訴書的方式闡述案件經過，不要用條列式如"1." "2."，可直接使用原始案件描述,描述不可過於簡短，這裏不要包含法條或者賠償。
+2. 以"二、"開頭，以專業律師角度列舉(所有)"相關法條"及其内容，並解釋其適用性，不要用條列式 不要用條列式如"1." "2." ，這裏請用敘述式。 二為法條相關適用，不需加入賠償金額。
+3. 以"三、根據以上事實請求賠償"開頭，接下來使用（一）（二）等分點列出各項賠償要求，每項都需要：
    - 列出具體金額
    - 提供詳細說明
    - 確保與原始案件中的賠償項目一致
 4. 最後做一個總結，包含：
-   - 所有賠償項目的總和
+   - 所有賠償項目的總和及請求
 
 注意事項：
 1. 回應必須完全基於提供的案件資訊
 2. 保持客觀、專業的語氣
 3. 確保金額計算準確
-4. 各分項要有明確的層級關係
 5. 保持格式的一致性
 6. 不要生成格式以外的任何東西
-7. 不要簡化案件事實，不需要分段
-8. 求償金額需和輸入吻合！案件事實也需和輸入吻合！
+7. 不要簡化案件事實
+8. 求償金額需和輸入吻合，案件事實也需和輸入吻合
 請生成回應："""
+        print("\n=== 輸入至LLM的完整Prompt ===")
+        print(prompt)
+        print("=== Prompt結束 ===\n")
 
         print("=== 生成回應中 ===")
         
@@ -200,7 +209,7 @@ class LegalRetrievalSystem:
         response = requests.post(
             'http://localhost:11434/api/generate',
             json={
-                "model": "kenneth85/llama-3-taiwan:8b-instruct-dpo-q6_K",
+                "model": "kenneth85/llama-3-taiwan:8b-instruct-dpo",# "kenneth85/llama-3-taiwan:70b-instruct-dpo-q3_K_S",
                 "prompt": prompt,
                 "stream": False
             }
@@ -229,6 +238,6 @@ class LegalRetrievalSystem:
         law_contents = self.get_law_content(relevant_law_numbers)
         
         # 5. 生成最終回應
-        response = self.generate_response(input_text, law_contents)
+        response = self.generate_response(input_text, parts, law_contents)
         
         return response

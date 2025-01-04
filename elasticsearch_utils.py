@@ -10,7 +10,7 @@ class ElasticsearchManager:
             verify_certs=False
         )
         self.index_name = 'text_embeddings'
-        self.logger = logger or logging.getLogger()
+        #self.logger = logger or logging.getLogger()
 
     def setup_indices(self, dims: int):
         """設置單一索引，包含類型標記和chunk ID"""
@@ -65,7 +65,7 @@ class ElasticsearchManager:
         
         result = self.es.index(index=self.index_name, body=doc)
         print(f"成功將 {text_type} embedding 存儲到 Elasticsearch，文檔 ID: {result['_id']}")
-        self.logger.info(f"成功將 {text_type} embedding 存儲到 Elasticsearch，文檔 ID: {result['_id']}")
+        #self.logger.info(f"成功將 {text_type} embedding 存儲到 Elasticsearch，文檔 ID: {result['_id']}")
 
         
     #搜尋相似文本，可以指定類型
