@@ -164,63 +164,136 @@ class LegalRetrievalSystem:
             
             return law_contents
             
-    def generate_response(self, input_text: str, parts: Dict[str, str], law_contents: List[str]) -> str:
-        """生成最終回應"""
-        # 準備 prompt
-        prompt = f"""你是一位台灣的專業的法律助理，請根據以下案件資訊和相關法條，以專業口吻生成一份完整的起訴書。
-        
-原始案件資訊：
-受傷情況：{parts.get('injuries', '未找到傷害情況')}
+    def generate_first_part(self, facts: str, law_contents: List[str], injuries: str) -> str:
+        """生成第一部分回應（案件事實和法律依據）"""
+        print("\n=== 生成第一部分回應 ===")
+        print("提供以下資訊:")
+        print("\n[案件事實]")
+        print(facts)
+        print("\n[法條資訊]")
+        print(' '.join(law_contents))
+        print("=== 第一部分輸入結束 ===\n")
 
-案件事實：{parts.get('facts', '未找到案件事實')}
+        # Extract law content and numbers
+        law_info = []
+        for content in law_contents:
+            match = re.match(r'第(\d+(?:-\d+)?)\s*條[：:]\s*(.+)', content)
+            if match:
+                number = match.group(1)
+                content = match.group(2).strip()
+                law_info.append({
+                    'number': number,
+                    'content': content
+                })
 
-相關法條：{' '.join(law_contents)}
+        # Format law citations
+        law_citations = []
+        law_numbers = []
+        for law in law_info:
+            number = law['number']
+            content = law['content']
+            
+            # Format the law number reference
+            if '-' in number:
+                base, sub = number.split('-')
+                number_ref = f"第{base}條之{sub}"
+            else:
+                number_ref = f"第{number}條"
+            
+            # Build the citations
+            law_citations.append(f'「{content}」')
+            if number in ['184', '191-2', '193', '195']:  # Cases that need "前段"
+                law_numbers.append(f'民法{number_ref}前段')
+            else:
+                law_numbers.append(f'民法{number_ref}')
 
-賠償請求：{parts.get('claims', '未找到請求賠償')}
+        prompt = f"""你是一個台灣原告律師，你現在要幫忙完成車禍起訴狀裏的案件事實陳述的部分，你只需要根據下列格式進行輸出，並確保每個段落內容完整** 禁止輸出格式以外的任何東西 **：
+一、事實概述：完整描述事故經過，事件結果盡量越詳細越好，要使用"緣被告"做開頭，並且在這段中都要以"原告""被告"作人物代稱，如果我給你的案件事實中沒有出現原告或被告的姓名，則請直接使用"原告""被告"作為代稱，請絕對不要自己憑空杜撰被告的姓名
+備註:請記得在"事實概述"前面加上"一、", ** 禁止輸出格式以外的任何東西 **
+  
+### 
+案件事實： 
+{facts}
 
-
-請嚴格按照以下格式生成回應：
-
-1. 以"一、"開頭，以起訴書的方式闡述案件經過，不要用條列式如"1." "2."，可直接使用原始案件描述,描述不可過於簡短，這裏不要包含法條或者賠償。
-2. 以"二、"開頭，以專業律師角度列舉(所有)"相關法條"及其内容，並解釋其適用性，不要用條列式 不要用條列式如"1." "2." ，這裏請用敘述式。 二為法條相關適用，不需加入賠償金額。
-3. 以"三、根據以上事實請求賠償"開頭，接下來使用（一）（二）等分點列出各項賠償要求，每項都需要：
-   - 列出具體金額
-   - 提供詳細說明
-   - 確保與原始案件中的賠償項目一致
-4. 最後做一個總結，包含：
-   - 所有賠償項目的總和及請求
-
-注意事項：
-1. 回應必須完全基於提供的案件資訊
-2. 保持客觀、專業的語氣
-3. 確保金額計算準確
-5. 保持格式的一致性
-6. 不要生成格式以外的任何東西
-7. 不要簡化案件事實
-8. 求償金額需和輸入吻合，案件事實也需和輸入吻合
-請生成回應："""
-        print("\n=== 輸入至LLM的完整Prompt ===")
-        print(prompt)
-        print("=== Prompt結束 ===\n")
-
-        print("=== 生成回應中 ===")
-        
-        # 使用 Ollama API 生成回應
+** 禁止輸出格式以外的任何東西 **
+"""
         response = requests.post(
             'http://localhost:11434/api/generate',
             json={
-                "model": "kenneth85/llama-3-taiwan:8b-instruct-dpo",# "kenneth85/llama-3-taiwan:70b-instruct-dpo-q3_K_S",
+                "model": "kenneth85/llama-3-taiwan:70b-instruct-dpo-q3_K_S",  #"kenneth85/llama-3-taiwan:8b-instruct-dpo",
+                "prompt": prompt,
+                "stream": False
+            }
+        )
+        
+        if response.status_code != 200:
+            raise Exception("無法生成案件事實描述")
+            
+        fact_description = response.json()['response']
+        #print(f'Fact Description Result: {fact_description}\n')
+
+        # Combine fact description with manually formatted legal section
+        legal_section = f"二、按{', '.join(law_citations)};{', '.join(law_numbers)}分別定有明文。查被告因上開侵權行為，致原告受有下列損害，依前揭規定，被告應負損害賠償責任："
+        
+        final_text = f"{fact_description}\n\n{legal_section}"
+        
+        return final_text
+
+    def generate_second_part(self, injuries: str, claims: str) -> str:
+        """生成第二部分回應（賠償項目）"""
+        print("\n=== 生成第二部分回應 ===")
+        print("提供以下資訊:")
+        print("\n[受傷情形]")
+        print(injuries)
+        print("\n[賠償請求]")
+        print(claims)
+        print("=== 第二部分輸入結束 ===\n")
+        prompt = f"""你是一個台灣原告律師，你要幫助原告整理賠償資訊，你只需要根據下列格式進行輸出，並確保每個段落內容完整：
+要確保完全照著模板的格式輸出，開頭的損害項目記得前面要加上"三、"，"損害項目總覽："前面要加上"四、"。
+不要加入異性字符如"#"及 "*"等
+三、損害項目：列出所有損害項目的金額，並說明對應事實。
+  模板：
+    損害項目名稱： [損害項目描述]
+    金額： [金額數字] 元
+    [描述此損害項目的原因和依據]
+    備註:如果有多名原告，需要針對每一位原告列出損害項目
+    範例:
+    原告A部分:
+    損害項目名稱1：...
+    金額:..
+    事實根據：...
+    損害項目名稱2：...
+    金額:..
+    事實根據：...
+    原告B分:
+    損害項目名稱1：...
+    金額:..
+    事實根據：...
+    損害項目名稱2：...
+    金額:..
+    事實根據：...
+四、總賠償金額：需要將每一項目的金額列出來並總結所有損害項目，計算總額，並簡述賠償請求的依據。 
+
+### 受傷情形：
+{injuries}
+
+### 賠償請求：
+{claims}"""
+
+        response = requests.post(
+            'http://localhost:11434/api/generate',
+            json={
+                "model": "kenneth85/llama-3-taiwan:70b-instruct-dpo-q3_K_S",  #"kenneth85/llama-3-taiwan:8b-instruct-dpo",
                 "prompt": prompt,
                 "stream": False
             }
         )
         
         if response.status_code == 200:
-            result = response.json()['response']
-            print("\n=== 生成完成 ===\n")
-            return result
+            print(f'First Result: {response.json()['response']}\n')
+            return response.json()['response']
         else:
-            raise Exception("無法生成回應")
+            raise Exception("無法生成第二部分回應")
             
     def process_case(self, input_text: str) -> str:
         """處理整個案件流程"""
@@ -237,7 +310,13 @@ class LegalRetrievalSystem:
         # 4. 獲取法條內容
         law_contents = self.get_law_content(relevant_law_numbers)
         
-        # 5. 生成最終回應
-        response = self.generate_response(input_text, parts, law_contents)
+        # 5. 生成第一部分回應（案件事實和法律依據）
+        first_part = self.generate_first_part(parts['facts'], law_contents,parts.get('injuries', ''))
         
-        return response
+        # 6. 生成第二部分回應（賠償項目）
+        second_part = self.generate_second_part(parts.get('injuries', ''), parts.get('claims', ''))
+        
+        # 7. 合併兩部分回應
+        final_response = f"{first_part}\n\n{second_part}"
+        
+        return final_response
