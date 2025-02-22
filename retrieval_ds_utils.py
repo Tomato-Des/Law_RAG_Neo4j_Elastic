@@ -207,20 +207,19 @@ class LegalRetrievalSystem:
             else:
                 law_numbers.append(f'民法{number_ref}')
 
-        prompt = f"""你是一個台灣原告律師，你現在要幫忙完成車禍起訴狀裏的案件事實陳述的部分，你只需要根據下列格式進行輸出，並確保每個段落內容完整** 禁止輸出格式以外的任何東西 **：
+        prompt = f"""你是一個台灣原告律師，你現在要幫忙完成車禍起訴狀裏的案件事實陳述的部分，你只需要根據下列格式進行輸出，並確保每個段落內容完整,禁止輸出格式以外的任何東西：
 一、事實概述：完整描述事故經過，案件過程盡量越詳細越好，要使用"緣被告"做開頭，並且在這段中都要以"原告""被告"作人物代稱，如果我給你的案件事實中沒有出現原告或被告的姓名，則請直接使用"原告""被告"作為代稱，請絕對不要自己憑空杜撰被告的姓名
-備註:請記得在"事實概述"前面加上"一、", ** 禁止輸出格式以外的任何東西 **
+備註:請記得在"事實概述"前面加上"一、", 禁止捏造故事 。禁止輸出格式以外的任何東西
   
-### 
+
 案件事實： 
 {facts}
 
-** 禁止輸出格式以外的任何東西 **
 """
         response = requests.post(
             'http://localhost:11434/api/generate',
             json={
-                "model": "kenneth85/llama-3-taiwan:70b-instruct-dpo-q3_K_S",  #"kenneth85/llama-3-taiwan:8b-instruct-dpo",
+                "model": "deepseek-r1:32b",  #"kenneth85/llama-3-taiwan:8b-instruct-dpo",
                 "prompt": prompt,
                 "stream": False
             }
@@ -240,7 +239,6 @@ class LegalRetrievalSystem:
         return final_text
 
     def generate_second_part(self, injuries: str, claims: str) -> str:
-        """生成第二部分回應（賠償項目）"""
         print("\n=== 生成第二部分回應 ===")
         print("提供以下資訊:")
         print("\n[受傷情形]")
@@ -248,52 +246,41 @@ class LegalRetrievalSystem:
         print("\n[賠償請求]")
         print(claims)
         print("=== 第二部分輸入結束 ===\n")
-        prompt = f"""你是一個台灣原告律師，你要幫助原告整理賠償資訊，你只需要根據下列格式進行輸出，並確保每個段落內容完整：
-要確保完全照著模板的格式輸出，開頭的損害項目記得前面要加上"三、"，"損害項目總覽："前面要加上"四、"。
-不要加入異性字符如"#"及 "*"等
-三、損害項目：列出所有損害項目的金額，並說明對應事實。
-  模板：
-    損害項目名稱： [損害項目描述]
-    金額： [金額數字] 元
-    [描述此損害項目的原因和依據]
-    備註:如果有多名原告，需要針對每一位原告列出損害項目
-    範例:
-    原告A部分:
-    損害項目名稱1：...
-    金額:..
-    事實根據：...
-    損害項目名稱2：...
-    金額:..
-    事實根據：...
-    原告B分:
-    損害項目名稱1：...
-    金額:..
-    事實根據：...
-    損害項目名稱2：...
-    金額:..
-    事實根據：...
-四、總賠償金額：需要將每一項目的金額列出來並總結所有損害項目，計算總額，並簡述賠償請求的依據。 
 
-### 受傷情形：
-{injuries}
+        prompt = f"""你是一個台灣原告律師，請根據下列資訊整理賠償資訊。請依據受傷情形和賠償請求，詳細列出各項損害項目、相應的金額、以及損害原因：
+    請嚴格按照以下格式輸出，禁止輸出MarnDown格式：
+    三、損害項目：依次列出：[賠償項目的類型]:[金額]元(金額需準確，不可模糊，可參考輸入)，若無明確金額請再檢查輸入從中查找相關金額、隨後輸出換行符號"\n"然後輸出此賠償請求的原因；若涉及多名原告或多名被告（例如「數名原告」、「數名被告」、「原被告皆數名」或「單純原被告各一」），請分別列出各自的賠償項目及原因。
+    四、總賠償金額：以"綜上所陳"開頭，仔細計算總賠償金額，若有不同人則分開計算。
+    備註:總賠償金額要做二次檢查，不要輸出任何格式以外的東西，禁止輸出MarnDown格式或以下任何字符[*/()##@$%]
 
-### 賠償請求：
-{claims}"""
+    受傷情形：
+    {injuries}
+
+    賠償請求：
+    {claims}"""
 
         response = requests.post(
             'http://localhost:11434/api/generate',
             json={
-                "model": "kenneth85/llama-3-taiwan:70b-instruct-dpo-q3_K_S",  #"kenneth85/llama-3-taiwan:8b-instruct-dpo",
+                "model": "deepseek-r1:32b",
                 "prompt": prompt,
                 "stream": False
             }
         )
-        
+
         if response.status_code == 200:
-            print(f'First Result: {response.json()['response']}\n')
+            print(f'Second Result: {response.json()["response"]}\n')
             return response.json()['response']
         else:
             raise Exception("無法生成第二部分回應")
+        
+    def remove_think_content(self, text: str) -> str:
+        import re
+        # This pattern matches any text between <think> and </think> (including newlines)
+        pattern = r'<think>.*?</think>'
+        cleaned_text = re.sub(pattern, '', text, flags=re.DOTALL)
+        return cleaned_text
+
             
     def process_case(self, input_text: str) -> str:
         """處理整個案件流程"""
@@ -317,6 +304,9 @@ class LegalRetrievalSystem:
         second_part = self.generate_second_part(parts.get('injuries', ''), parts.get('claims', ''))
         
         # 7. 合併兩部分回應
-        final_response = f"{first_part}\n\n{second_part}"
+        final_response = f"{first_part}{second_part}"
+
+         # 8. 移除所有 <think> ... </think> 區塊
+        final_response = self.remove_think_content(final_response)
         
         return final_response

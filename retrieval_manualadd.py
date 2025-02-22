@@ -220,7 +220,7 @@ class LegalRetrievalSystem:
         response = requests.post(
             'http://localhost:11434/api/generate',
             json={
-                "model": "kenneth85/llama-3-taiwan:70b-instruct-dpo-q3_K_S",  #"kenneth85/llama-3-taiwan:8b-instruct-dpo",
+                "model": "kenneth85/llama-3-taiwan:8b-instruct-dpo",  #"kenneth85/llama-3-taiwan:70b-instruct-dpo-q3_K_S",
                 "prompt": prompt,
                 "stream": False
             }
@@ -248,31 +248,18 @@ class LegalRetrievalSystem:
         print("\n[賠償請求]")
         print(claims)
         print("=== 第二部分輸入結束 ===\n")
-        prompt = f"""你是一個台灣原告律師，你要幫助原告整理賠償資訊，你只需要根據下列格式進行輸出，並確保每個段落內容完整：
-要確保完全照著模板的格式輸出，開頭的損害項目記得前面要加上"三、"，"損害項目總覽："前面要加上"四、"。
-不要加入異性字符如"#"及 "*"等
-三、損害項目：列出所有損害項目的金額，並說明對應事實。
-  模板：
-    損害項目名稱： [損害項目描述]
-    金額： [金額數字] 元
-    [描述此損害項目的原因和依據]
-    備註:如果有多名原告，需要針對每一位原告列出損害項目
-    範例:
-    原告A部分:
-    損害項目名稱1：...
-    金額:..
-    事實根據：...
-    損害項目名稱2：...
-    金額:..
-    事實根據：...
-    原告B分:
-    損害項目名稱1：...
-    金額:..
-    事實根據：...
-    損害項目名稱2：...
-    金額:..
-    事實根據：...
-四、總賠償金額：需要將每一項目的金額列出來並總結所有損害項目，計算總額，並簡述賠償請求的依據。 
+        prompt = f"""你是一個台灣原告律師，請根據下列資訊整理賠償請求資訊，並依照以下格式進行輸出，且嚴格遵守格式，不得輸出額外內容，不要加入異性字符如"#"及 "*"等：
+格式要求：
+三、損害項目：依次列出各賠償項目的類型和金額，格式為：
+    [賠償項目的類型]:[金額]元
+每項賠償項目後請換行，並隨後輸出該項賠償請求的原因與依據。
+請注意需考慮以下情況：
+  - 數名原告：各原告之損害項目需分別列出。
+  - 數名被告：各被告之損害項目需分別列出。
+  - 原被告皆數名：請分別針對每一組原被告列出賠償項目。
+  - 單純原被告各一：僅列出一組原告與被告的賠償項目。
+四、總賠償金額：以"綜上所陳"開頭，列出所有賠償項目的金額及原因，但**不要進行數值計算**（最終總額由後續程式進行計算），請將需計算的金額用如下格式標記：[[SUM: 金額1, 金額2, ...]]元。
+
 
 ### 受傷情形：
 {injuries}
@@ -283,7 +270,7 @@ class LegalRetrievalSystem:
         response = requests.post(
             'http://localhost:11434/api/generate',
             json={
-                "model": "kenneth85/llama-3-taiwan:70b-instruct-dpo-q3_K_S",  #"kenneth85/llama-3-taiwan:8b-instruct-dpo",
+                "model": "kenneth85/llama-3-taiwan:8b-instruct-dpo",  #"kenneth85/llama-3-taiwan:70b-instruct-dpo-q3_K_S",
                 "prompt": prompt,
                 "stream": False
             }
@@ -294,7 +281,58 @@ class LegalRetrievalSystem:
             return response.json()['response']
         else:
             raise Exception("無法生成第二部分回應")
-            
+    
+    def finalize_compensation_total(self, text: str) -> str:
+        """
+        檢測並處理文本中所有總賠償金額的金額求和標記。
+        這些標記形如 [[SUM: 數字1, 數字2, ...]] 或 [[SUM: 數字1 + 數字2 + ...]]。
+
+        規則：
+          - 如果用 "+" 分隔，則直接根據 "+" 分割。
+          - 如果沒有 "+"，則使用逗號作為分隔符，但只有當逗號後或前有空格時才認為是分隔符，
+            否則逗號被視為千位分隔符。
+          - 函式將對每個匹配的標記進行處理，打印出完整標記和內部內容，計算總和，
+            並用計算結果替換原標記。
+        """
+        import re
+        pattern = r'\[\[SUM:\s*([^\]]+)\]\]'
+
+        if not re.search(pattern, text):
+            print("No compensation total notation found in the text.")
+            return text
+
+        def replacement(match):
+            full_notation = match.group(0)
+            notation_content = match.group(1)
+            print(f"Found compensation total notation: {full_notation}")
+            print(f"Notation content to sum: {notation_content}")
+
+            # Split on plus signs OR on commas that have a following space.
+            # Explanation:
+            #   - \s*\+\s* splits on plus signs (with optional surrounding spaces).
+            #   - ,\s+ splits on commas that are immediately followed by at least one space.
+            parts = re.split(r'\s*\+\s*|,\s+', notation_content)
+
+            numbers = []
+            for part in parts:
+                part = part.strip()
+                # If the part contains commas without spaces, they are thousand separators.
+                cleaned = part.replace(',', '')
+                try:
+                    number = float(cleaned)
+                    numbers.append(number)
+                except ValueError:
+                    print(f"Warning: Unable to parse '{part}' as a number.")
+            total = sum(numbers)
+            if total.is_integer():
+                total = int(total)
+            return str(total)
+
+        new_text = re.sub(pattern, replacement, text)
+        return new_text
+
+
+
     def process_case(self, input_text: str) -> str:
         """處理整個案件流程"""
         # 1. 分割輸入文本
@@ -315,6 +353,7 @@ class LegalRetrievalSystem:
         
         # 6. 生成第二部分回應（賠償項目）
         second_part = self.generate_second_part(parts.get('injuries', ''), parts.get('claims', ''))
+        second_part = self.finalize_compensation_total(second_part)#manual addition
         
         # 7. 合併兩部分回應
         final_response = f"{first_part}\n\n{second_part}"

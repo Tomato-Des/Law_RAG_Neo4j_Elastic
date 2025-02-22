@@ -1,7 +1,7 @@
 # main_retrieval.py
 import os
 from dotenv import load_dotenv
-from retrieval_utils import LegalRetrievalSystem
+from retrieval_manualadd import LegalRetrievalSystem
 from elasticsearch_utils import ElasticsearchManager
 from neo4j_manager import Neo4jManager
 from models import EmbeddingModel
