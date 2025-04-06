@@ -3,24 +3,23 @@ from elasticsearch import Elasticsearch
 from typing import List
 
 class ElasticsearchManager:
-    def __init__(self, host: str, username: str, password: str, logger=None):
+    def __init__(self, host: str, username: str, password: str):
         self.es = Elasticsearch(
             host,
             http_auth=(username, password),
             verify_certs=False
         )
-        self.index_name = 'text_embeddings'
-        #self.logger = logger or logging.getLogger()
+        self.index_name = 'ts_text_embeddings'
 
     def setup_indices(self, dims: int):
-        """設置單一索引，包含類型標記和chunk ID"""
+        """Set up a single index with type tagging and chunk ID"""
         mapping = {
             "mappings": {
                 "properties": {
                     "case_id": {"type": "integer"},
-                    "chunk_id": {"type": "keyword"},  # New field for chunk ID
+                    "chunk_id": {"type": "keyword"},
                     "text": {"type": "text"},
-                    "text_type": {"type": "keyword"},  # fact, law, or compensation
+                    "text_type": {"type": "keyword"},
                     "embedding": {
                         "type": "dense_vector",
                         "dims": dims
@@ -32,7 +31,6 @@ class ElasticsearchManager:
             }
         }
 
-        # 如果索引存在就刪除
         if self.es.indices.exists(index=self.index_name):
             print(f"\n發現現有索引 {self.index_name}")
             choice = input("是否要刪除現有索引？(yes/no): ").strip().lower()
@@ -44,7 +42,6 @@ class ElasticsearchManager:
                 self.es.indices.create(index=self.index_name, body=mapping)
             else:
                 print("保留現有索引")
-                # 檢查現有索引的維度是否匹配
                 current_mapping = self.es.indices.get_mapping(index=self.index_name)
                 current_dims = current_mapping[self.index_name]['mappings']['properties']['embedding']['dims']
                 if current_dims != dims:
@@ -54,10 +51,10 @@ class ElasticsearchManager:
             self.es.indices.create(index=self.index_name, body=mapping)
 
     def store_embedding(self, text_type: str, case_id: int, chunk_id: str, text: str, embedding: List[float]):
-        """存儲文本和 embedding，並標記類型和chunk ID"""
+        """Store text and embedding with type and chunk ID"""
         doc = {
             'case_id': case_id,
-            'chunk_id': chunk_id,  # Add chunk ID to document
+            'chunk_id': chunk_id,
             'text': text,
             'text_type': text_type,
             'embedding': embedding
@@ -65,33 +62,47 @@ class ElasticsearchManager:
         
         result = self.es.index(index=self.index_name, body=doc)
         print(f"成功將 {text_type} embedding 存儲到 Elasticsearch，文檔 ID: {result['_id']}")
-        #self.logger.info(f"成功將 {text_type} embedding 存儲到 Elasticsearch，文檔 ID: {result['_id']}")
 
-        
-    #搜尋相似文本，可以指定類型
-    """def search_similar_texts(self, query_embedding: List[float], text_type: str = None, top_k: int = 5):
-        query = {
-            "size": top_k,
-            "query": {
-                "script_score": {
-                    "query": {
-                        "bool": {
-                            "must": [{"match_all": {}}]
+    def get_max_case_id(self) -> int:
+        """Retrieve the maximum case_id from Elasticsearch"""
+        try:
+            response = self.es.search(
+                index=self.index_name,
+                body={
+                    "query": {"match_all": {}},
+                    "aggs": {
+                        "max_case_id": {
+                            "max": {
+                                "field": "case_id"
+                            }
                         }
                     },
-                    "script": {
-                        "source": "cosineSimilarity(params.query_vector, 'embedding') + 1.0",
-                        "params": {"query_vector": query_embedding}
+                    "size": 0
+                }
+            )
+            max_id = response['aggregations']['max_case_id']['value']
+            return int(max_id) if max_id is not None else -1
+        except Exception as e:
+            print(f"Error retrieving max case_id from Elasticsearch: {str(e)}")
+            return -1
+
+    def get_chunk_count(self, case_id: int, chunk_type: str) -> int:
+        """Count chunks of a specific type for a case_id to generate sequence"""
+        try:
+            response = self.es.count(
+                index=self.index_name,
+                body={
+                    "query": {
+                        "bool": {
+                            "must": [
+                                {"term": {"case_id": case_id}},
+                                {"prefix": {"chunk_id": f"{case_id}-{chunk_type}"}},
+                            ]
+                        }
                     }
                 }
-            }
-        }
-
-        # 如果指定了類型，添加類型過濾
-        if text_type:
-            query["query"]["script_score"]["query"]["bool"]["must"].append(
-                {"term": {"text_type": text_type}}
             )
-
-        response = self.es.search(index=self.index_name, body=query)
-        return response['hits']['hits']"""
+            return response['count']
+        except Exception as e:
+            print(f"Error counting chunks in Elasticsearch: {str(e)}")
+            return 0

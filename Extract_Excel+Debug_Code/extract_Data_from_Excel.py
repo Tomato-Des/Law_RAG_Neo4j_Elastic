@@ -52,11 +52,11 @@ try:
 
     # Define output file names
     output_excel = "extracted_truth.xlsx"
-    output_csv = "extracted_truth.csv"
+    #output_csv = "extracted_truth.csv"
 
     # Save to Excel and CSV
     extracted_data.to_excel(output_excel, index=False)
-    extracted_data.to_csv(output_csv, index=False)
+    #extracted_data.to_csv(output_csv, index=False)
 
     # Debug: Confirm files saved
     print(f"Data successfully saved to {output_excel} and {output_csv}.")

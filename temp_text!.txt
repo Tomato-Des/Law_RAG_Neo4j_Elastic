@@ -4,4 +4,10 @@ must undo it if full_clear on neo4j database!
 models temp and text_processor_temp is only for training machine broken period, should delete after it
 temp.py is test code, should add to gitignore
 
-chunks do not have chunks id, should change schema of elastic and neo4j to add chunks id for better debug
+Dealing with 3000 cases, created elasticsearch_utils_ts.py and 
+added # Generate embedding for the full case text right after chunks = self.chunk_text(case_text)
+
+above should withdraw cuz new file created for that 3280 data!!
+
+created 3 file start with "ts" for 3280 data
+ts_elastic uses table name "'ts_text_embeddings'
