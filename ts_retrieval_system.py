@@ -7,7 +7,23 @@ import time
 import os
 from dotenv import load_dotenv
 import requests
-from models import EmbeddingModel
+from ts_models import EmbeddingModel
+from ts_define_case_type import get_case_type
+from ts_prompt import (
+    get_facts_prompt, 
+    get_compensation_prompt_part1_with_avg, 
+    get_compensation_prompt_part1_without_avg,
+    get_compensation_prompt_part1_single_plaintiff,     # Add this
+    get_compensation_prompt_part1_multiple_plaintiffs,  # Add this
+    get_compensation_prompt_part2,
+    get_compensation_prompt_part3,
+    get_case_summary_prompt
+)
+from ts_prompt_check import (
+    get_fact_quality_check_prompt,
+    get_compensation_format_check_prompt,
+    get_calculation_tags_check_prompt
+)
 
 class RetrievalSystem:
     def __init__(self):
@@ -16,7 +32,7 @@ class RetrievalSystem:
         try:
             # Initialize Elasticsearch
             self.es = Elasticsearch(
-                "https://localhost:9200",
+                "https://localhost:9201",
                 http_auth=(os.getenv('ELASTIC_USER'), os.getenv('ELASTIC_PASSWORD')),
                 verify_certs=False
             )
@@ -41,7 +57,7 @@ class RetrievalSystem:
             
             # Initialize LLM API settings
             self.llm_url = "http://localhost:11434/api/generate"
-            self.llm_model = "kenneth85/llama-3-taiwan:8b-instruct-dpo"
+            self.llm_model = "gemma3:27b" #"kenneth85/llama-3-taiwan:8b-instruct-dpo"
             
             # Test LLM connection
             response = requests.get("http://localhost:11434/api/version")
@@ -59,26 +75,37 @@ class RetrievalSystem:
         if hasattr(self, 'neo4j_driver') and self.neo4j_driver:
             self.neo4j_driver.close()
     
-    def search_elasticsearch(self, query_text: str, search_type: str, k: int) -> List[Dict]:
+    def search_elasticsearch(self, query_text: str, search_type: str, k: int, query_case_type: str) -> List[Dict]:
         """
-        Search Elasticsearch for similar documents of the specified type
+        Search Elasticsearch for similar documents of the specified type and case type
         
         Args:
-            query_text: The text to search for
-            search_type: Either "full" or "fact"
-            k: Number of top results to retrieve
+        query_text: The text to search for
+        search_type: Either "full" or "fact"
+        k: Number of top results to retrieve
+        query_case_type: The case type determined from the query           
             
         Returns:
             List of dictionaries containing case_id, score, and text
         """
         try:
+            # Case type is now passed as parameter instead of being determined here
+            print(f"使用案件類型進行搜索: {query_case_type}")
+
             # Create the embedding for the query
             query_embedding = self.embedding_model.embed_texts([query_text])[0]
-            
-            # Search in Elasticsearch
+
+            # Search in Elasticsearch with case_type filter
             script_query = {
                 "script_score": {
-                    "query": {"term": {"text_type": search_type}},
+                    "query": {
+                        "bool": {
+                            "must": [
+                                {"term": {"text_type": search_type}},
+                                {"term": {"case_type": query_case_type}}
+                            ]
+                        }
+                    },
                     "script": {
                         "source": "cosineSimilarity(params.query_vector, 'embedding') + 1.0",
                         "params": {"query_vector": query_embedding.tolist()}
@@ -91,7 +118,7 @@ class RetrievalSystem:
                 body={
                     "size": k,
                     "query": script_query,
-                    "_source": ["case_id", "text", "chunk_id", "text_type"]
+                    "_source": ["case_id", "text", "chunk_id", "text_type", "case_type"]
                 }
             )
             
@@ -103,8 +130,43 @@ class RetrievalSystem:
                     "score": hit["_score"],
                     "text": hit["_source"]["text"],
                     "chunk_id": hit["_source"]["chunk_id"],
-                    "text_type": hit["_source"]["text_type"]
+                    "text_type": hit["_source"]["text_type"],
+                    "case_type": hit["_source"].get("case_type", "")  # Get case_type if available
                 })
+            
+            # If no results found with the exact case type, try a more generic search
+            if not results:
+                print(f"在 {query_case_type} 類別中無相符結果，嘗試通用搜索...")
+                # Use original search without case_type filter
+                script_query = {
+                    "script_score": {
+                        "query": {"term": {"text_type": search_type}},
+                        "script": {
+                            "source": "cosineSimilarity(params.query_vector, 'embedding') + 1.0",
+                            "params": {"query_vector": query_embedding.tolist()}
+                        }
+                    }
+                }
+                
+                response = self.es.search(
+                    index=self.es_index,
+                    body={
+                        "size": k,
+                        "query": script_query,
+                        "_source": ["case_id", "text", "chunk_id", "text_type", "case_type"]
+                    }
+                )
+                
+                # Process results
+                for hit in response["hits"]["hits"]:
+                    results.append({
+                        "case_id": hit["_source"]["case_id"],
+                        "score": hit["_score"],
+                        "text": hit["_source"]["text"],
+                        "chunk_id": hit["_source"]["chunk_id"],
+                        "text_type": hit["_source"]["text_type"],
+                        "case_type": hit["_source"].get("case_type", "")  # Get case_type if available
+                    })
             
             return results
         
@@ -201,16 +263,31 @@ class RetrievalSystem:
     
     def filter_laws_by_occurrence(self, law_counts: Dict[str, int], threshold: int) -> List[str]:
         """
-        Filter laws by occurrence threshold
+        Filter laws by occurrence threshold and sort them in ascending numerical order
         
         Args:
             law_counts: Dictionary with law numbers as keys and occurrence counts as values
             threshold: Minimum number of occurrences required
             
         Returns:
-            List of law numbers that meet the threshold
+            List of law numbers that meet the threshold, sorted in ascending order
         """
-        return [law for law, count in law_counts.items() if count >= threshold]
+        # Filter laws that meet the threshold
+        filtered_laws = [law for law, count in law_counts.items() if count >= threshold]
+        
+        # Sort the laws numerically (handling hyphenated law numbers like "184-1")
+        def law_sort_key(law_num):
+            # Split by hyphen if exists
+            parts = law_num.split('-')
+            # Convert main number to int
+            main_num = int(parts[0])
+            # If there's a sub-number, convert it to int too, otherwise use 0
+            sub_num = int(parts[1]) if len(parts) > 1 else 0
+            # Return a tuple for sorting
+            return (main_num, sub_num)
+        
+        # Sort the filtered laws using the custom sort key
+        return sorted(filtered_laws, key=law_sort_key)
     
     def get_law_contents(self, law_numbers: List[str]) -> List[Dict]:
         """
@@ -379,3 +456,427 @@ class RetrievalSystem:
         except Exception as e:
             print(f"呼叫 LLM 時發生錯誤: {str(e)}")
             raise
+
+    def get_indictment_from_neo4j(self, case_id: int) -> str:
+        """
+        Retrieve the full indictment text for a given case id from Neo4j
+
+        Args:
+            case_id: The case id to retrieve
+
+        Returns:
+            The full indictment text
+        """
+        try:
+            with self.neo4j_driver.session() as session:
+                query = """
+                MATCH (c:case_node {case_id: $case_id})
+                RETURN c.case_text AS indictment_text
+                """
+
+                result = session.run(query, case_id=case_id)
+                record = result.single()
+
+                print(f"NEAREST INDICTMENT 查詢結果: {record}")
+
+                # Correct way to check Neo4j record
+                if record is not None and record.get("indictment_text") is not None:
+                    return record["indictment_text"]
+                else:
+                    print(f"警告: 在 Neo4j 中找不到案件 {case_id} 的起訴狀文本")
+                    return ""
+
+        except Exception as e:
+            print(f"從 Neo4j 獲取起訴狀文本時發生錯誤: {str(e)}")
+            raise
+
+    def split_indictment_text(self, indictment_text: str) -> Dict[str, str]:
+        """
+        Split indictment text into fact, law, compensation, and conclusion parts
+        using the same method as in create_indictment_nodes
+
+        Args:
+            indictment_text: The full indictment text
+
+        Returns:
+            Dictionary with the four parts
+        """
+        # Initialize section variables
+        fact_text, law_text, compensation_text, conclusion_text = "", "", "", ""
+
+        try:
+            # Trim any leading/trailing whitespace
+            indictment_text = indictment_text.strip()
+
+            # Find positions of required markers
+            pos_1 = indictment_text.find("一、")
+
+            # For the second marker and "（一）"/"(一)", use regex to ensure there's whitespace before them
+            matches_2 = list(re.finditer(r'(?:\s)二、', indictment_text))
+            matches_section_1 = list(re.finditer(r'(?:\s)[（(]一[）)]', indictment_text))
+
+            # For the conclusion, find either "綜上所陳" or "綜上所述"
+            pos_conclusion_1 = indictment_text.find("綜上所陳")
+            pos_conclusion_2 = indictment_text.find("綜上所述")
+
+            # Use the one that appears in the text (prefer "綜上所陳" if both appear)
+            if pos_conclusion_1 != -1:
+                pos_conclusion = pos_conclusion_1
+            elif pos_conclusion_2 != -1:
+                pos_conclusion = pos_conclusion_2
+            else:
+                pos_conclusion = -1
+                print("警告: 起訴狀中缺少「綜上所陳」或「綜上所述」標記")
+                return {
+                    "fact_text": "",
+                    "law_text": "",
+                    "compensation_text": "",
+                    "conclusion_text": ""
+                }
+
+            # Check if all required markers exist
+            if pos_1 == -1 or not matches_2 or not matches_section_1:
+                print("警告: 起訴狀中缺少必要標記")
+                return {
+                    "fact_text": "",
+                    "law_text": "",
+                    "compensation_text": "",
+                    "conclusion_text": ""
+                }
+
+            pos_2 = matches_2[0].start() + 1  # +1 to point to the actual "二" character
+            pos_section_1 = matches_section_1[0].start() + 1  # +1 to point to the actual "（" or "(" character
+
+            # Check if they are in correct order
+            if not (pos_1 < pos_2 < pos_section_1 < pos_conclusion):
+                print("警告: 起訴狀標記順序錯誤")
+                return {
+                    "fact_text": "",
+                    "law_text": "",
+                    "compensation_text": "",
+                    "conclusion_text": ""
+                }
+
+            # Extract the content of the different parts
+            fact_text = indictment_text[pos_1:pos_2-1].strip()
+            law_text = indictment_text[pos_2:pos_section_1-1].strip()
+            compensation_text = indictment_text[pos_section_1:pos_conclusion].strip()
+            conclusion_text = indictment_text[pos_conclusion:].strip()
+
+        except Exception as e:
+            print(f"分割起訴狀文本時發生錯誤: {str(e)}")
+            return {
+                "fact_text": "",
+                "law_text": "",
+                "compensation_text": "",
+                "conclusion_text": ""
+            }
+
+        return {
+            "fact_text": fact_text,
+            "law_text": law_text,
+            "compensation_text": compensation_text,
+            "conclusion_text": conclusion_text
+        }
+    
+    def generate_case_summary(self, accident_facts: str, injuries: str) -> str:
+        """
+        Generate a summary of the case facts and injuries for quality check
+
+        Args:
+            accident_facts: The accident facts section from user query
+            injuries: The injuries section from user query
+
+        Returns:
+            A summary of the case
+        """
+        prompt = get_case_summary_prompt(accident_facts, injuries)
+        return self.call_llm(prompt)
+
+    def check_fact_quality(self, generated_fact: str, summary: str) -> Dict[str, str]:
+        """
+        Check if the generated fact part matches the summary
+
+        Args:
+            generated_fact: The generated fact part
+            summary: The case summary for comparison
+
+        Returns:
+            Dictionary with check result and reason
+        """
+        prompt = get_fact_quality_check_prompt(generated_fact, summary)
+        result = self.call_llm(prompt)
+
+        # Extract result and reason
+        pass_fail = "fail"  # Default to fail
+        reason = ""
+
+        if "pass" in result.lower():
+            pass_fail = "pass"
+
+        reason_match = re.search(r'\[理由\]:(.*?)(?:\n|$)', result, re.DOTALL)
+        if reason_match:
+            reason = reason_match.group(1).strip()
+        else:
+            reason_match = re.search(r'理由:(.*?)(?:\n|$)', result, re.DOTALL)
+            if reason_match:
+                reason = reason_match.group(1).strip()
+
+        return {
+            "result": pass_fail,
+            "reason": reason
+        }
+        
+    def check_amounts_in_summary(self, summary_section: str, compensation_sums: Dict[str, float]) -> Dict[str, str]:
+        """
+        Check if all amounts from compensation_sums appear in the summary section
+        
+        Args:
+            summary_section: The summary section (綜上所陳 or 綜上所述)
+            compensation_sums: Dictionary with compensation amounts
+            
+        Returns:
+            Dictionary with check result and reason
+        """
+        # Remove all commas from the summary section to handle formatted numbers
+        summary_without_commas = summary_section.replace(',', '')
+        summary_without_commas = summary_without_commas.replace('，', '')
+        
+        # Track missing amounts
+        missing_amounts = []
+        
+        # Check each amount
+        for plaintiff, amount in compensation_sums.items():
+            # Convert amount to integer string to match format in summary
+            amount_str = str(int(amount))
+            if amount_str not in summary_without_commas:
+                missing_amounts.append(f"{amount_str}")
+        
+        # Return result
+        if not missing_amounts:
+            return {
+                "result": "pass",
+                "reason": "所有賠償金額都包含在總結中"
+            }
+        else:
+            return {
+                "result": "fail",
+                "reason": f"總結中缺少以下賠償金額: {', '.join(missing_amounts)}"
+            }
+    
+    def clean_facts_part(self, text: str) -> str:
+        """
+        Clean the facts part by removing excess text after max 2 newlines
+        
+        Args:
+            text: Generated facts part text
+            
+        Returns:
+            Cleaned facts part text
+        """
+        # Replace consecutive newlines with a single newline
+        import re
+        text = re.sub(r'\n+', '\n', text)
+        
+        # Find the first occurrence of "一、"
+        start_idx = text.find("一、")
+        if start_idx == -1:
+            return text
+        
+        # Split the text after "一、" by newline
+        remaining_text = text[start_idx:]
+        parts = remaining_text.split('\n')
+        
+        # Keep only the first paragraph and at most one additional paragraph
+        if len(parts) > 2:
+            return '\n'.join(parts[:2])
+        
+        return remaining_text
+    
+    def clean_conclusion_part(self, text: str) -> str:
+        """
+        Clean the conclusion part by keeping only text before the first newline
+        
+        Args:
+            text: Generated conclusion part text
+            
+        Returns:
+            Cleaned conclusion part text
+        """
+        # Find the first occurrence of newline
+        newline_idx = text.find('\n')
+        if newline_idx == -1:
+            return text
+        
+        # Return only the text before the first newline
+        return text[:newline_idx]
+    
+    def remove_special_chars(self, text: str) -> str:
+        """
+        Remove specific special characters from text
+
+        Args:
+            text: Input text
+
+        Returns:
+            Text with specific special characters removed
+        """
+        import re
+        # Remove only specific special characters like # and @
+        return re.sub(r'[#@$%^&*~`]+', '', text)
+    
+    def clean_compensation_part(self, text: str) -> str:
+        """
+        Clean the compensation part by finding the last compensation item marker (（一）, （二）, etc.)
+        and removing any content after a double newline following that marker.
+        
+        Args:
+            text: Generated compensation part text
+            
+        Returns:
+            Cleaned compensation part text
+        """
+        # Find all occurrences of compensation item markers
+        import re
+        item_markers = re.finditer(r'[一二三四五六七八九十]+、', text, re.MULTILINE)
+        
+        # Get the position of the last marker
+        last_marker_pos = -1
+        for match in item_markers:
+            last_marker_pos = match.start()
+        
+        # If no markers found, return the original text
+        if last_marker_pos == -1:
+            return text
+        
+        # Find double newline after the last marker
+        double_newline_pos = text.find("\n\n", last_marker_pos)
+        
+        # If no double newline found, return the original text
+        if double_newline_pos == -1:
+            return text
+        
+        # Return text up to the double newline
+        return text[:double_newline_pos].strip()
+        
+    def generate_facts(self, accident_facts: str, reference_fact_text: str) -> str:
+        """
+        Generate facts part using LLM
+        
+        Args:
+            accident_facts: The accident facts from user query
+            reference_fact_text: Reference fact text
+            
+        Returns:
+            Generated facts part
+        """
+        prompt = get_facts_prompt(accident_facts, reference_fact_text)
+        return self.call_llm(prompt)
+        
+    def generate_compensation_part1(self, injuries: str, compensation_facts: str, include_conclusion: bool, average_compensation: float, case_type: str, plaintiffs_info: str = "") -> str:
+        """
+        Generate compensation part 1 using LLM
+        
+        Args:
+        injuries: Injuries description
+        compensation_facts: Compensation facts
+        include_conclusion: Whether to include average compensation info
+        average_compensation: Average compensation amount
+        case_type: The case type to determine template
+        plaintiffs_info: Information about plaintiffs extracted from input
+            
+        Returns:
+            Generated compensation part 1
+        """
+        # Determine if case involves multiple plaintiffs based on case_type
+        is_multiple_plaintiffs = any(x in case_type for x in ["數名原告", "原被告皆數名"])
+
+        if is_multiple_plaintiffs:
+            # Use multiple plaintiffs template
+            if include_conclusion and average_compensation > 0:
+                prompt = get_compensation_prompt_part1_multiple_plaintiffs(injuries, compensation_facts, average_compensation, plaintiffs_info)
+            else:
+                prompt = get_compensation_prompt_part1_multiple_plaintiffs(injuries, compensation_facts, plaintiffs_info=plaintiffs_info)
+        else:
+            # Use single plaintiff template
+            if include_conclusion and average_compensation > 0:
+                prompt = get_compensation_prompt_part1_single_plaintiff(injuries, compensation_facts, average_compensation, plaintiffs_info)
+            else:
+                prompt = get_compensation_prompt_part1_single_plaintiff(injuries, compensation_facts, plaintiffs_info=plaintiffs_info)
+
+        return self.call_llm(prompt)
+        
+    def generate_compensation_part2(self, compensation_part1: str, plaintiffs_info: str = "") -> str:
+        """
+        Generate compensation part 2 (calculation tags) using LLM
+        
+        Args:
+            compensation_part1: The compensation part 1 text
+            plaintiffs_info: Information about plaintiffs extracted from input
+        Returns:
+            Generated calculation tags
+        """
+        prompt = get_compensation_prompt_part2(compensation_part1, plaintiffs_info)
+        return self.call_llm(prompt)
+        
+    def generate_compensation_part3(self, compensation_part1: str, summary_format: str, plaintiffs_info: str = "") -> str:
+        """
+        Generate compensation part 3 (conclusion) using LLM
+        
+        Args:
+            compensation_part1: The compensation part 1 text
+            summary_format: The summary format string
+            plaintiffs_info: Information about plaintiffs extracted from input
+        Returns:
+            Generated conclusion part
+        """
+        prompt = get_compensation_prompt_part3(compensation_part1, summary_format, plaintiffs_info)
+        return self.call_llm(prompt)
+        
+    def check_compensation_format(self, final_compensation: str) -> str:
+        """
+        Check if the compensation format is valid
+        
+        Args:
+            final_compensation: The final compensation text
+            
+        Returns:
+            Check result as string
+        """
+        prompt = get_compensation_format_check_prompt(final_compensation)
+        return self.call_llm(prompt)
+    
+    # Add this method to the RetrievalSystem class in ts_retrieval_system.py
+    def check_calculation_tags(self, compensation_part1: str, compensation_part2: str) -> Dict[str, str]:
+        """
+        Check if the generated calculation tags are valid and match the compensation items
+        
+        Args:
+            compensation_part1: The compensation items text
+            compensation_part2: The generated calculation tags
+            
+        Returns:
+            Dictionary with check result and reason
+        """
+        prompt = get_calculation_tags_check_prompt(compensation_part1, compensation_part2)
+        result = self.call_llm(prompt)
+        
+        # Extract result and reason
+        pass_fail = "fail"  # Default to fail
+        reason = ""
+        
+        if "pass" in result.lower():
+            pass_fail = "pass"
+        
+        reason_match = re.search(r'\[理由\]:(.*?)(?:\n|$)', result, re.DOTALL)
+        if reason_match:
+            reason = reason_match.group(1).strip()
+        else:
+            reason_match = re.search(r'理由:(.*?)(?:\n|$)', result, re.DOTALL)
+            if reason_match:
+                reason = reason_match.group(1).strip()
+        
+        return {
+            "result": pass_fail,
+            "reason": reason
+        }

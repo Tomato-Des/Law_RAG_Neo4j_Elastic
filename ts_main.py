@@ -1,4 +1,4 @@
-# main.py
+# ts_main.py
 import sys
 from datetime import datetime
 import os
@@ -7,10 +7,11 @@ from sklearn.metrics.pairwise import cosine_similarity
 from docx import Document
 import pandas as pd
 from dotenv import load_dotenv
-from models import EmbeddingModel
+from ts_models import EmbeddingModel
 from ts_text_processor import TextProcessor
 from ts_elasticsearch_utils import ElasticsearchManager
 from ts_neo4j_manager import Neo4jManager
+from ts_define_case_type import get_case_type
 from typing import List, Dict
 import warnings
 
@@ -45,7 +46,11 @@ class LegalRAGSystem:
     def process_lawyer_input(self, case_text: str, case_id: int):
         """Process lawyer_input: store full text and chunks in Elasticsearch using chunking and LLM classification"""
         try:
-            # Store full text in Elasticsearch
+            # Classify the case type
+            case_type = get_case_type(case_text)
+            print(f"案件 {case_id} 分類為: {case_type}")
+            
+            # Store full text in Elasticsearch with case_type
             full_embedding = self.embedding_model.embed_texts([case_text])[0]
             full_chunk_id = f"{case_id}-full"
             self.es_manager.store_embedding(
@@ -53,15 +58,16 @@ class LegalRAGSystem:
                 case_id,
                 full_chunk_id,
                 case_text,
-                full_embedding.tolist()
+                full_embedding.tolist(),
+                case_type=case_type  # Add case_type parameter
             )
             
             # Truncate the text - remove part starting with a space or newline followed by "三、"
             truncated_text = re.split(r'[\s\n]三、', case_text)[0]
-
+    
             # Remove all spaces and newlines from the truncated text
             truncated_text = re.sub(r'\s+', '', truncated_text)
-
+    
             # Chunk the text using semantic chunking
             chunks = self.chunk_text(truncated_text)
             for chunk in chunks:
@@ -73,12 +79,13 @@ class LegalRAGSystem:
                     case_id,
                     chunk_id,
                     chunk,
-                    embedding.tolist()
+                    embedding.tolist(),
+                    case_type=case_type  # Add case_type parameter
                 )
         except Exception as e:
             print(f"處理 lawyer_input 案件 {case_id} 時發生錯誤: {str(e)}")
             raise
-
+        
     def _generate_chunk_sequence(self, case_id: int, chunk_type: str) -> int:
         """Generate sequence number for chunk ID in Elasticsearch"""
         count = self.es_manager.get_chunk_count(case_id, chunk_type)

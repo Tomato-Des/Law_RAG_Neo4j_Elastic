@@ -1,4 +1,4 @@
-# elasticsearch_utils.py
+# ts_elasticsearch_utils.py
 from elasticsearch import Elasticsearch
 from typing import List
 
@@ -20,6 +20,7 @@ class ElasticsearchManager:
                     "chunk_id": {"type": "keyword"},
                     "text": {"type": "text"},
                     "text_type": {"type": "keyword"},
+                    "case_type": {"type": "keyword"},  # Add case_type field
                     "embedding": {
                         "type": "dense_vector",
                         "dims": dims
@@ -50,18 +51,27 @@ class ElasticsearchManager:
             print(f"創建新索引 {self.index_name}")
             self.es.indices.create(index=self.index_name, body=mapping)
 
-    def store_embedding(self, text_type: str, case_id: int, chunk_id: str, text: str, embedding: List[float]):
-        """Store text and embedding with type and chunk ID"""
-        doc = {
-            'case_id': case_id,
-            'chunk_id': chunk_id,
-            'text': text,
-            'text_type': text_type,
-            'embedding': embedding
-        }
-        
-        result = self.es.index(index=self.index_name, body=doc)
-        print(f"成功將 {text_type} embedding 存儲到 Elasticsearch，文檔 ID: {result['_id']}")
+    # Add case_type parameter to store_embedding method
+    def store_embedding(self, text_type: str, case_id: int, chunk_id: str, text: str, embedding: List[float], case_type: str = ""):
+        """Store document embedding in Elasticsearch"""
+        try:
+            # Create document with embedding
+            doc = {
+                "case_id": case_id,
+                "chunk_id": chunk_id,
+                "text_type": text_type,
+                "text": text,
+                "embedding": embedding,
+                "case_type": case_type  # Add case_type field
+            }
+
+            # Index the document
+            self.es.index(index=self.index_name, id=chunk_id, body=doc)
+            print(f"存儲文本嵌入成功：{chunk_id}")
+
+        except Exception as e:
+            print(f"存儲嵌入時發生錯誤：{str(e)}")
+            raise
 
     def get_max_case_id(self) -> int:
         """Retrieve the maximum case_id from Elasticsearch"""
@@ -87,22 +97,26 @@ class ElasticsearchManager:
             return -1
 
     def get_chunk_count(self, case_id: int, chunk_type: str) -> int:
-        """Count chunks of a specific type for a case_id to generate sequence"""
+        """Get the count of chunks for a specific case_id and chunk_type
+        with a forced refresh to ensure accuracy"""
         try:
-            response = self.es.count(
-                index=self.index_name,
-                body={
-                    "query": {
-                        "bool": {
-                            "must": [
-                                {"term": {"case_id": case_id}},
-                                {"prefix": {"chunk_id": f"{case_id}-{chunk_type}"}},
-                            ]
-                        }
+            # Force a refresh to make sure all documents are searchable
+            self.es.indices.refresh(index=self.index_name)
+            
+            # Query with both case_id and text_type filters
+            query = {
+                "query": {
+                    "bool": {
+                        "must": [
+                            {"term": {"case_id": case_id}},
+                            {"term": {"text_type": chunk_type}}
+                        ]
                     }
                 }
-            )
-            return response['count']
+            }
+            
+            result = self.es.count(index=self.index_name, body=query)
+            return result['count']
         except Exception as e:
-            print(f"Error counting chunks in Elasticsearch: {str(e)}")
-            return 0
+            print(f"Error getting chunk count: {str(e)}")
+            return 0  # Return 0 on error to be safe

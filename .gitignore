@@ -8,3 +8,8 @@
 **/test.py
 __pycache__
 TEMP_PROMT.txt
+**/t.py
+**/tt.py
+**/ui_demo.py
+ts_elasticonly.py
+ts_elastic_system.py

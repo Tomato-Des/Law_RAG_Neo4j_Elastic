@@ -1,4 +1,4 @@
-# models.py
+# ts_models.py
 from typing import List
 import numpy as np
 import requests

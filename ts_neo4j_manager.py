@@ -1,4 +1,4 @@
-# neo4j_manager.py
+# ts_neo4j_manager.py
 from neo4j import GraphDatabase
 from typing import List, Dict
 import re
