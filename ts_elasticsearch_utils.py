@@ -32,7 +32,7 @@ class ElasticsearchManager:
             }
         }
 
-        if self.es.indices.exists(index=self.index_name):
+        """if self.es.indices.exists(index=self.index_name):
             print(f"\n發現現有索引 {self.index_name}")
             choice = input("是否要刪除現有索引？(yes/no): ").strip().lower()
             
@@ -49,7 +49,7 @@ class ElasticsearchManager:
                     raise ValueError(f"現有索引的維度 ({current_dims}) 與當前模型的維度 ({dims}) 不匹配")
         else:
             print(f"創建新索引 {self.index_name}")
-            self.es.indices.create(index=self.index_name, body=mapping)
+            self.es.indices.create(index=self.index_name, body=mapping)"""
 
     # Add case_type parameter to store_embedding method
     def store_embedding(self, text_type: str, case_id: int, chunk_id: str, text: str, embedding: List[float], case_type: str = ""):

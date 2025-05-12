@@ -12,23 +12,22 @@ def get_facts_prompt(accident_facts, fact_text_reference):
             ### 參考案件格式（僅供格式參考，不要使用其內容）： {fact_text_reference}"""
 
 
-
+#及其對原告生活工作的影響
 # Single plaintiff compensation prompt template
 def get_compensation_prompt_part1_single_plaintiff(injuries, compensation_facts, average_compensation=None, plaintiffs_info=""):
     avg_compensation_text = f"請注意：類似案件的平均賠償金額為 {average_compensation:.0f} 元。這僅供參考，不應直接使用此金額，而應根據本案受傷情形和損失明細進行合理估算。\n\n" if average_compensation else ""
     plaintiff_text = f"原告資訊：{plaintiffs_info}\n\n" if plaintiffs_info else ""
-    return f"""你是一個台灣原告律師，你需要幫忙起草車禍起訴狀中的賠償請求部分。請根據以下提供的受傷情形和損失情況，列出所有可能的賠償項目，每個項目需要有明確的金額和原因。
+    return f"""你是一個台灣原告律師，你需要根據“格式範例”填寫車禍起訴狀中的賠償請求部分。請根據以下提供的受傷情形和損失情況，列出所有賠償項目，每個項目需要有明確的金額和原因。
             **不要生成總結或者結論。**
 
 {plaintiff_text}
 格式要求：
 - 使用（一）、（二）等標記不同賠償項目
 - 每個項目需包含標題、金額、事實根據說明
-- 根據提供的資訊合理估算賠償金額
 - 金額應以阿拉伯數字呈現，並加上「元」字
-- 詳細說明受傷情形、治療過程及其對原告生活工作的影響
+- 詳細說明受傷情形、治療過程
 - 相關賠償項目可包括但不限於：醫療費用、看護費用、交通費用、工作損失、修車費用、精神慰撫金、修理費用等等
-- 嚴格按照範本，不要添加額外資訊
+- 嚴格按照範本，不要添加額外資訊如分析建議，總結等等
 
 格式範例：
 （一）[損害項目]：[金額]元
@@ -78,80 +77,6 @@ def get_compensation_prompt_part1_multiple_plaintiffs(injuries, compensation_fac
 [詳細說明該項損害的原因、計算基礎及相關證據]
 
 {avg_compensation_text}請根據下列受傷情形和損失情況，列出詳細賠償請求：
-
-受傷情形：
-{injuries}
-
-損失情況：
-{compensation_facts}
-"""
-
-###NOT USED! Compensation part 1 prompt with average compensation 
-def get_compensation_prompt_part1_with_avg(injuries, compensation_facts, average_compensation):
-    return f"""你是一個台灣原告律師，你需要幫忙起草車禍起訴狀中的賠償請求部分。請根據以下提供的受傷情形和損失情況，列出所有可能的賠償項目，每個項目需要有明確的金額和原因。
-            **不要生成總結或者結論。**
-
-格式要求：
-- 使用（一）、（二）等標記不同賠償項目
-- 每個項目包含標題、金額和請求原因
-- 若涉及多名原告或多名被告，請分別列出各自的賠償項目及原因
-- 金額應以數字寫明，勿使用"千"， "萬"等字眼
-- 將原告A等替換成原告名字
-- 禁止輸出賠償金不相關的原告資訊
-- 嚴格按照範本，不要添加額外資訊
-
-多名原告範本：
-    [原告A名稱]部分:
-    [損害項目名稱1]：[金額]元'\n'
-    事實根據：...
-    [損害項目名稱2]：[金額]元'\n'
-    事實根據：...
-    [原告B名稱]部分:
-    [損害項目名稱1]：[金額]元'\n'
-    事實根據：...
-    [損害項目名稱2]：[金額]元'\n'
-    事實根據：...
-**範本結束**
-
-請注意：類似案件的平均賠償金額為 {average_compensation:.0f} 元。這僅供參考，不應直接使用此金額，而應根據本案受傷情形和損失明細進行合理估算。
-
-請根據下列受傷情形和損失情況，列出詳細賠償請求：
-
-受傷情形：
-{injuries}
-
-損失情況：
-{compensation_facts}
-"""
-
-###NOT USED!!! Compensation part 1 prompt without average compensation
-def get_compensation_prompt_part1_without_avg(injuries, compensation_facts):
-    return f"""你是一個台灣原告律師，你需要幫忙起草車禍起訴狀中的賠償請求部分。請根據以下提供的受傷情形和損失情況，列出所有可能的賠償項目，每個項目需要有明確的金額和原因。
-            **不要生成總結或者結論。**
-
-格式要求：
-- 使用（一）、（二）等標記不同賠償項目
-- 每個項目包含標題、金額和請求原因
-- 若涉及多名原告或多名被告，請分別列出各自的賠償項目及原因
-- 金額應以數字寫明，勿使用"千"， "萬"等字眼
-- 將原告A等替換成原告名字
-- 禁止輸出賠償金不相關的原告資訊
-- 嚴格按照範本，不要添加額外資訊
-
-多名原告範本：
-    [原告A名稱]部分:
-    [損害項目名稱1]：[金額]元'\n'
-    事實根據：...
-    [損害項目名稱2]：[金額]元'\n'
-    事實根據：...
-    [原告B名稱]部分:
-    [損害項目名稱1]：[金額]元'\n'
-    事實根據：...
-    [損害項目名稱2]：[金額]元'\n'
-    事實根據：...
-**範本結束**
-
-請根據下列受傷情形和損失情況，列出詳細賠償請求：
 
 受傷情形：
 {injuries}
@@ -238,3 +163,80 @@ def get_case_summary_prompt(accident_facts, injuries):
     受傷情形：
     {injuries}
     """
+
+
+
+
+###NOT USED! Compensation part 1 prompt with average compensation 
+def get_compensation_prompt_part1_with_avg(injuries, compensation_facts, average_compensation):
+    return f"""你是一個台灣原告律師，你需要幫忙起草車禍起訴狀中的賠償請求部分。請根據以下提供的受傷情形和損失情況，列出所有可能的賠償項目，每個項目需要有明確的金額和原因。
+            **不要生成總結或者結論。**
+
+格式要求：
+- 使用（一）、（二）等標記不同賠償項目
+- 每個項目包含標題、金額和請求原因
+- 若涉及多名原告或多名被告，請分別列出各自的賠償項目及原因
+- 金額應以數字寫明，勿使用"千"， "萬"等字眼
+- 將原告A等替換成原告名字
+- 禁止輸出賠償金不相關的原告資訊
+- 嚴格按照範本，不要添加額外資訊
+
+多名原告範本：
+    [原告A名稱]部分:
+    [損害項目名稱1]：[金額]元'\n'
+    事實根據：...
+    [損害項目名稱2]：[金額]元'\n'
+    事實根據：...
+    [原告B名稱]部分:
+    [損害項目名稱1]：[金額]元'\n'
+    事實根據：...
+    [損害項目名稱2]：[金額]元'\n'
+    事實根據：...
+**範本結束**
+
+請注意：類似案件的平均賠償金額為 {average_compensation:.0f} 元。這僅供參考，不應直接使用此金額，而應根據本案受傷情形和損失明細進行合理估算。
+
+請根據下列受傷情形和損失情況，列出詳細賠償請求：
+
+受傷情形：
+{injuries}
+
+損失情況：
+{compensation_facts}
+"""
+
+###NOT USED!!! Compensation part 1 prompt without average compensation
+def get_compensation_prompt_part1_without_avg(injuries, compensation_facts):
+    return f"""你是一個台灣原告律師，你需要幫忙起草車禍起訴狀中的賠償請求部分。請根據以下提供的受傷情形和損失情況，列出所有可能的賠償項目，每個項目需要有明確的金額和原因。
+            **不要生成總結或者結論。**
+
+格式要求：
+- 使用（一）、（二）等標記不同賠償項目
+- 每個項目包含標題、金額和請求原因
+- 若涉及多名原告或多名被告，請分別列出各自的賠償項目及原因
+- 金額應以數字寫明，勿使用"千"， "萬"等字眼
+- 將原告A等替換成原告名字
+- 禁止輸出賠償金不相關的原告資訊
+- 嚴格按照範本，不要添加額外資訊
+
+多名原告範本：
+    [原告A名稱]部分:
+    [損害項目名稱1]：[金額]元'\n'
+    事實根據：...
+    [損害項目名稱2]：[金額]元'\n'
+    事實根據：...
+    [原告B名稱]部分:
+    [損害項目名稱1]：[金額]元'\n'
+    事實根據：...
+    [損害項目名稱2]：[金額]元'\n'
+    事實根據：...
+**範本結束**
+
+請根據下列受傷情形和損失情況，列出詳細賠償請求：
+
+受傷情形：
+{injuries}
+
+損失情況：
+{compensation_facts}
+"""

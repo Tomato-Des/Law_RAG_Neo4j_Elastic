@@ -109,6 +109,7 @@ def main():
             user_input_lines.append(line)
             
         user_query = "\n".join(user_input_lines)
+        query_sections = retrieval_system.split_user_query(user_query)
         
         if not user_query.strip():
             print("未輸入查詢內容，程序結束")
@@ -189,7 +190,7 @@ def main():
         print(f"\n獲取最相似案件 (Case ID: {most_similar_case_id}) 的完整起訴狀...")
         
         # Get full indictment text from Neo4j for the most similar case
-        reference_indictment = retrieval_system.get_indictment_from_neo4j(most_similar_case_id)#CHANGE!!
+        reference_indictment = retrieval_system.get_indictment_from_neo4j(most_similar_case_id)
         
         if not reference_indictment:
             print("警告: 無法獲取參考案件的起訴狀，將使用標準生成流程")
@@ -233,8 +234,100 @@ def main():
         filtered_law_numbers = retrieval_system.filter_laws_by_occurrence(law_counts, j)
         print(f"\n符合出現次數 >= {j} 的法條: {filtered_law_numbers}")
         
+        print("\n進行法條適用性檢查...")
+        # Generate laws by keyword mapping
+        print("使用關鍵詞映射生成可能適用的法條...")
+        keyword_laws = retrieval_system.get_laws_by_keyword_mapping(
+            query_sections['accident_facts'], 
+            query_sections['injuries'],
+            query_sections['compensation_facts']
+        )
+        print(f"關鍵詞映射生成的法條: {keyword_laws}")
+
+        # Compare with filtered laws
+        missing_laws = [law for law in keyword_laws if law not in filtered_law_numbers]
+        extra_laws = [law for law in filtered_law_numbers if law not in keyword_laws]
+
+        print(f"可能缺少的法條: {missing_laws}")
+        print(f"可能多餘的法條: {extra_laws}")
+
+        # Check each missing law
+        for law_number in missing_laws:
+            print(f"\n檢查缺少的法條 {law_number}...")
+            # Get law content from Neo4j
+            law_content = ""
+            with retrieval_system.neo4j_driver.session() as session:
+                query = """
+                MATCH (l:law_node {number: $number})
+                RETURN l.content AS content
+                """
+                result = session.run(query, number=law_number)
+                record = result.single()
+                if record and record.get("content"):
+                    law_content = record["content"]
+            
+            if not law_content:
+                print(f"無法獲取法條 {law_number} 的內容，跳過檢查")
+                continue
+            
+            # Check if the law is applicable
+            check_result = retrieval_system.check_law_content(
+                query_sections['accident_facts'],
+                query_sections['injuries'],
+                law_number,
+                law_content
+            )
+            
+            print(f"法條 {law_number} 檢查結果: {check_result['result']}")
+            print(f"原因: {check_result['reason']}")
+            
+            # Add to filtered laws if applicable
+            if check_result['result'] == 'pass':
+                print(f"添加法條 {law_number} 到適用法條列表")
+                filtered_law_numbers.append(law_number)
+                # Sort the list again
+                filtered_law_numbers = sorted(filtered_law_numbers)
+
+        # Check each extra law
+        for law_number in extra_laws:
+            print(f"\n檢查可能多餘的法條 {law_number}...")
+            # Get law content
+            law_content = ""
+            with retrieval_system.neo4j_driver.session() as session:
+                query = """
+                MATCH (l:law_node {number: $number})
+                RETURN l.content AS content
+                """
+                result = session.run(query, number=law_number)
+                record = result.single()
+                if record and record.get("content"):
+                    law_content = record["content"]
+            
+            if not law_content:
+                print(f"無法獲取法條 {law_number} 的內容，跳過檢查")
+                continue
+            
+            # Check if the law is applicable
+            check_result = retrieval_system.check_law_content(
+                query_sections['accident_facts'],
+                query_sections['injuries'],
+                law_number,
+                law_content
+            )
+            
+            print(f"法條 {law_number} 檢查結果: {check_result['result']}")
+            print(f"原因: {check_result['reason']}")
+            
+            # Remove from filtered laws if not applicable
+            if check_result['result'] == 'fail':
+                print(f"從適用法條列表中移除法條 {law_number}")
+                filtered_law_numbers.remove(law_number)
+        # Filter out duplicates and sort
+        filtered_law_numbers = sorted(list(set(filtered_law_numbers)))
+        print(f"\n最終適用法條列表: {filtered_law_numbers}")
+
         # Get law contents
-        law_contents = []
+        law_contents = [] 
         if filtered_law_numbers:
             law_contents = retrieval_system.get_law_contents(filtered_law_numbers)
             print("\n獲取到的法條內容:")
@@ -265,8 +358,6 @@ def main():
         
         # Process user query
         print("\n處理用戶查詢...")
-        query_sections = retrieval_system.split_user_query(user_query)
-        
         # Check if query was split correctly
         if not query_sections["accident_facts"]:
             print("警告: 無法正確分割查詢中的事故事實部分")
@@ -348,128 +439,138 @@ def main():
         compensation_part2 = None
         compensation_part3 = None
         compensation_sums = None
-        final_compensation = None
+        final_compensation = None     
         
-        # Main loop - up to 10 attempts for the entire compensation generation
-        max_attempts = 5
-        for main_attempt in range(1, max_attempts + 1):
-            print(f"\n正在進行第 {main_attempt} 次嘗試生成賠償部分...")
+        # Generate part 1
+        print("\n生成第一部分 (損害賠償項目)...")
+        compensation_part1 = None
+        part1_success = False
+
+        for part1_attempt in range(1, 6):  # max 3 attempts for part 1
+            print(f"\n正在進行第 {part1_attempt} 次嘗試生成賠償項目...")
             
-            # Generate part 1
-            print("\n生成第一部分 (損害賠償項目)...")
             compensation_part1 = retrieval_system.generate_compensation_part1(
                 query_sections['injuries'],
                 query_sections['compensation_facts'],
                 include_conclusion,
                 average_compensation,
-                case_type,  # Pass the case_type parameter
-                plaintiffs_info  # Pass the plaintiffs info parameter
+                case_type,
+                plaintiffs_info
             )
+            
             print("\n========== DEBUG: 第一部分賠償生成結果 ==========")
-            print(f"前100個字符: {compensation_part1}...")
+            print(f"compensation_part1: {compensation_part1}")
             print("========== DEBUG 結束 ==========\n")
+            
             compensation_part1 = retrieval_system.clean_compensation_part(compensation_part1)
             
-            # Generate part 2
-            print("\n生成第二部分 (計算標籤)...")
-            compensation_part2 = None
-            part2_success = False
-            for part2_attempt in range(1, 4):  # max 3 attempts for part 2
-                print(f"\n正在進行第 {part2_attempt} 次嘗試生成計算標籤...")
-                
-                compensation_part2 = retrieval_system.generate_compensation_part2(compensation_part1, plaintiffs_info)
-                
-                print("\n========== DEBUG: 計算標籤生成結果 ==========")
-                print(compensation_part2)
-                calc_tags = re.findall(r'<calculate>.*?</calculate>', compensation_part2)
-                print(f"找到的計算標籤數量: {len(calc_tags)}")
-                for i, tag in enumerate(calc_tags):
-                    print(f"標籤 {i+1}: {tag}")
-                print("========== DEBUG 結束 ==========\n")
-                
-                # Check quality
-                print("\n檢查計算標籤質量...")
-                quality_check = retrieval_system.check_calculation_tags(compensation_part1, compensation_part2)
-                print(f"質量檢查結果: {quality_check['result']}")
-                print(f"原因: {quality_check['reason']}")
-                
-                if quality_check['result'] == 'pass':
-                    print("質量檢查通過，繼續下一步")
-                    part2_success = True
-                    break
-                    
-                if part2_attempt == 3:
-                    print(f"警告: 達到最大嘗試次數 (3)，使用最後一次生成的計算標籤")
-
-            # Continue with extracting and calculating sums from the tags
-            # Extract and calculate sums from the tags
-            print("\n提取並計算賠償金額...")
-            compensation_sums = extract_calculate_tags(compensation_part2)
+            # Check quality
+            print("\n檢查賠償項目質量...")
+            quality_check = retrieval_system.check_compensation_part1(
+                compensation_part1, 
+                query_sections['injuries'],
+                query_sections['compensation_facts'],
+                plaintiffs_info
+            )
             
-            # Print extracted sums
-            for plaintiff, amount in compensation_sums.items():
-                if plaintiff == "default":
-                    print(f"總賠償金額: {amount:.2f} 元")
-                else:
-                    print(f"[原告{plaintiff}]賠償金額: {amount:.2f} 元")
+            print(f"質量檢查結果: {quality_check['result']}")
+            print(f"原因: {quality_check['reason']}")
             
-            # Format the compensation totals for part 3
-            summary_totals = []
-            for plaintiff, amount in compensation_sums.items():
-                if plaintiff == "default":
-                    summary_totals.append(f"總計{amount:.0f}元")
-                else:
-                    summary_totals.append(f"應賠償[原告{plaintiff}]之損害，總計{amount:.0f}元")
-            summary_format = "；".join(summary_totals)
-            
-            # Inner loop - up to 3 attempts for part 3 with quality check
-            print("\n生成第三部分 (綜上所陳)...")
-            compensation_part3 = None
-            part3_success = False
-            
-            for part3_attempt in range(1, 6):  # max 6 attempts for part 3
-                print(f"\n正在進行第 {part3_attempt} 次嘗試生成總結...")
+            if quality_check['result'] == 'pass':
+                print("質量檢查通過，繼續下一步")
+                part1_success = True
+                break
                 
-                compensation_part3 = retrieval_system.generate_compensation_part3(compensation_part1, summary_format, plaintiffs_info)
-                
-                print(f"COMPENSATION_PART3 BEFORE QUALITY CHECK AND BEFORE CLEAN:\n {compensation_part3}")
-                compensation_part3 = retrieval_system.clean_conclusion_part(compensation_part3)
-                # Extract the part after "綜上所陳" or "綜上所述"
-                summary_section = ""
-                if "綜上所陳" in compensation_part3:
-                    summary_section = compensation_part3[compensation_part3.find("綜上所陳"):]
-                elif "綜上所述" in compensation_part3:
-                    summary_section = compensation_part3[compensation_part3.find("綜上所述"):]
-                
-                # Check if all amounts from compensation_sums appear in the summary section
-                print("\n檢查總結中是否包含所有賠償金額...")
-                check_result = retrieval_system.check_amounts_in_summary(summary_section, compensation_sums)
-                print(f"檢查結果: {check_result['result']}")
-                print(f"原因: {check_result['reason']}")
-                
-                if check_result['result'] == 'pass':
-                    print("檢查通過，總結中包含所有賠償金額")
-                    part3_success = True
-                    break
-                
-                if part3_attempt == 5: # Changed from 3 to 5 to match the loop range
-                    print(f"警告: 達到最大嘗試次數 (5)，使用最後一次生成的總結")
+            if part1_attempt == 3:
+                print(f"警告: 達到最大嘗試次數 (3)，使用最後一次生成的賠償項目")
+        
+        # Generate part 2
+        print("\n生成第二部分 (計算標籤)...")
+        compensation_part2 = None
+        part2_success = False
+        for part2_attempt in range(1, 4):  # max 3 attempts for part 2
+            print(f"\n正在進行第 {part2_attempt} 次嘗試生成計算標籤...")
             
-            # Combine parts for final check
-            final_compensation = f"{compensation_part1}\n\n{compensation_part3}"
+            compensation_part2 = retrieval_system.generate_compensation_part2(compensation_part1, plaintiffs_info)
             
-            # Check the combined compensation format
-            print("\n檢查最終賠償部分格式...")
-            check_result = retrieval_system.check_compensation_format(final_compensation)
-            print(f"格式檢查結果: {check_result}")
+            print("\n========== DEBUG: 計算標籤生成結果 ==========")
+            print(compensation_part2)
+            calc_tags = re.findall(r'<calculate>.*?</calculate>', compensation_part2)
+            print(f"找到的計算標籤數量: {len(calc_tags)}")
+            for i, tag in enumerate(calc_tags):
+                print(f"標籤 {i+1}: {tag}")
+            print("========== DEBUG 結束 ==========\n")
             
-            if "pass" in check_result.lower():
-                print("格式檢查通過")
+            # Check quality
+            print("\n檢查計算標籤質量...")
+            quality_check = retrieval_system.check_calculation_tags(compensation_part1, compensation_part2)
+            print(f"質量檢查結果: {quality_check['result']}")
+            print(f"原因: {quality_check['reason']}")
+            
+            if quality_check['result'] == 'pass':
+                print("質量檢查通過，繼續下一步")
+                part2_success = True
+                break
+                
+            if part2_attempt == 3:
+                print(f"警告: 達到最大嘗試次數 (3)，使用最後一次生成的計算標籤")
+        # Continue with extracting and calculating sums from the tags
+        # Extract and calculate sums from the tags
+        print("\n提取並計算賠償金額...")
+        compensation_sums = extract_calculate_tags(compensation_part2)
+        
+        # Print extracted sums
+        for plaintiff, amount in compensation_sums.items():
+            if plaintiff == "default":
+                print(f"總賠償金額: {amount:.2f} 元")
+            else:
+                print(f"[原告{plaintiff}]賠償金額: {amount:.2f} 元")
+        
+        # Format the compensation totals for part 3
+        summary_totals = []
+        for plaintiff, amount in compensation_sums.items():
+            if plaintiff == "default":
+                summary_totals.append(f"總計{amount:.0f}元")
+            else:
+                summary_totals.append(f"應賠償[原告{plaintiff}]之損害，總計{amount:.0f}元")
+        summary_format = "；".join(summary_totals)
+        
+        # Inner loop - up to 3 attempts for part 3 with quality check
+        print("\n生成第三部分 (綜上所陳)...")
+        compensation_part3 = None
+        part3_success = False
+        
+        for part3_attempt in range(1, 6):  # max 6 attempts for part 3
+            print(f"\n正在進行第 {part3_attempt} 次嘗試生成總結...")
+            
+            compensation_part3 = retrieval_system.generate_compensation_part3(compensation_part1, summary_format, plaintiffs_info)
+            
+            print(f"COMPENSATION_PART3 BEFORE QUALITY CHECK AND BEFORE CLEAN:\n {compensation_part3}")
+            compensation_part3 = retrieval_system.clean_conclusion_part(compensation_part3)
+            # Extract the part after "綜上所陳" or "綜上所述"
+            summary_section = ""
+            if "綜上所陳" in compensation_part3:
+                summary_section = compensation_part3[compensation_part3.find("綜上所陳"):]
+            elif "綜上所述" in compensation_part3:
+                summary_section = compensation_part3[compensation_part3.find("綜上所述"):]
+            
+            # Check if all amounts from compensation_sums appear in the summary section
+            print("\n檢查總結中是否包含所有賠償金額...")
+            check_result = retrieval_system.check_amounts_in_summary(summary_section, compensation_sums)
+            print(f"檢查結果: {check_result['result']}")
+            print(f"原因: {check_result['reason']}")
+            
+            if check_result['result'] == 'pass':
+                print("檢查通過，總結中包含所有賠償金額")
+                part3_success = True
                 break
             
-            if main_attempt == max_attempts:
-                print(f"警告: 達到最大嘗試次數 ({max_attempts})，使用最後一次生成的結果")
-                break
+            if part3_attempt == 5: # Changed from 3 to 5 to match the loop range
+                print(f"警告: 達到最大嘗試次數 (5)，使用最後一次生成的總結")
+        
+        # Combine parts for final check
+        final_compensation = f"{compensation_part1}\n\n{compensation_part3}"
+        
         
         # Combine all parts
         final_response = f"{first_part}\n\n{law_section}\n\n{final_compensation}"

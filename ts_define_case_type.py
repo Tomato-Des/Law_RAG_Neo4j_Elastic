@@ -1,7 +1,7 @@
 #ts_define_case_type.py
 import re
 from ts_input_filter import generate_filter
-def get_case_type(sim_input: str) -> str:
+def get_case_type(sim_input: str, cinfo = 0) -> str:
     """
     根據模擬輸入文本 sim_input 判斷案件的類型。
     會依據原被告的人數，以及是否涉及未成年人、僱用人責任或動物責任等因素來組合案型說明。
@@ -48,12 +48,20 @@ def get_case_type(sim_input: str) -> str:
 
     if match.group(1).strip()[1] =="是":
         case_type += "+§187未成年案型"
+        if cinfo == 1:
+            return case_type, plaintiffs_info, case_info
         return case_type, plaintiffs_info
     if match.group(2).strip()[1] =="是":
         case_type += "+§188僱用人案型"
+        if cinfo == 1:
+            return case_type, plaintiffs_info, case_info
         return case_type, plaintiffs_info
     if match.group(3).strip()[1] =="是":
         case_type += "+§190動物案型"
+        if cinfo == 1:
+            return case_type, plaintiffs_info, case_info
         return case_type, plaintiffs_info
     
+    if cinfo == 1:
+            return case_type, plaintiffs_info, case_info
     return case_type, plaintiffs_info

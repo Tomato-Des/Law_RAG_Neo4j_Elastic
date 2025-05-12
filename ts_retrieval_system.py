@@ -11,8 +11,6 @@ from ts_models import EmbeddingModel
 from ts_define_case_type import get_case_type
 from ts_prompt import (
     get_facts_prompt, 
-    get_compensation_prompt_part1_with_avg, 
-    get_compensation_prompt_part1_without_avg,
     get_compensation_prompt_part1_single_plaintiff,     # Add this
     get_compensation_prompt_part1_multiple_plaintiffs,  # Add this
     get_compensation_prompt_part2,
@@ -21,18 +19,18 @@ from ts_prompt import (
 )
 from ts_prompt_check import (
     get_fact_quality_check_prompt,
-    get_compensation_format_check_prompt,
+    get_compensation_part1_check_prompt,
     get_calculation_tags_check_prompt
 )
 
 class RetrievalSystem:
-    def __init__(self):
+    def __init__(self, modelname = "gemma3:27b"):
         """Initialize connections to Elasticsearch, Neo4j, and the embedding model"""
         load_dotenv()
         try:
             # Initialize Elasticsearch
             self.es = Elasticsearch(
-                "https://localhost:9201",
+                "https://localhost:9200",
                 http_auth=(os.getenv('ELASTIC_USER'), os.getenv('ELASTIC_PASSWORD')),
                 verify_certs=False
             )
@@ -57,7 +55,7 @@ class RetrievalSystem:
             
             # Initialize LLM API settings
             self.llm_url = "http://localhost:11434/api/generate"
-            self.llm_model = "gemma3:27b" #"kenneth85/llama-3-taiwan:8b-instruct-dpo"
+            self.llm_model = modelname #"gemma3:27b" #"kenneth85/llama-3-taiwan:8b-instruct-dpo"
             
             # Test LLM connection
             response = requests.get("http://localhost:11434/api/version")
@@ -174,6 +172,35 @@ class RetrievalSystem:
             print(f"搜索 Elasticsearch 時發生錯誤: {str(e)}")
             raise
     
+    #FOR ts_gradio_app.py
+    def get_full_text_from_elasticsearch(self, case_id):
+        """Get full text for a case from Elasticsearch"""
+        try:
+            query = {
+                "bool": {
+                    "must": [
+                        {"term": {"case_id": case_id}},
+                        {"term": {"text_type": "full"}}
+                    ]
+                }
+            }
+            
+            response = self.es.search(
+                index=self.es_index,
+                body={
+                    "size": 1,
+                    "query": query,
+                    "_source": ["case_id", "text", "chunk_id", "text_type"]
+                }
+            )
+            
+            if response["hits"]["total"]["value"] > 0:
+                return response["hits"]["hits"][0]["_source"]["text"]
+            else:
+                return f"無法獲取 Case ID {case_id} 的完整文本"
+        except Exception as e:
+            return f"無法獲取 Case ID {case_id} 的完整文本: {str(e)}"
+
     def get_laws_from_neo4j(self, case_ids: List[int]) -> List[Dict]:
         """
         Retrieve used laws for the given case ids from Neo4j
@@ -627,6 +654,121 @@ class RetrievalSystem:
             "reason": reason
         }
         
+
+    def get_laws_by_keyword_mapping(self, accident_facts: str, injuries: str, compensation_facts: str) -> List[str]:
+        """
+        Use keyword mapping to identify relevant laws for the case
+        
+        Args:
+            accident_facts: The accident facts from user query
+            injuries: The injuries section from user query
+            compensation_facts: The compensation facts from user query
+            
+        Returns:
+            List of law numbers that may be relevant
+        """
+        # Create keyword to law mapping based on reference function
+        legal_mapping = {
+            "184": ["未注意", "過失", "損害賠償", "侵害他人之權利"],
+            "185": ["共同侵害", "共同行為", "數人侵害", "造意人"],
+            "187": ["無行為能力", "限制行為能力", "法定代理人", "識別能力", "未成年"],
+            "188": ["受僱人", "僱用人", "雇傭", "連帶賠償"],
+            "191-2": ["汽車", "機車", "交通事故", "傷害", "損害"],
+            "193": ["損失", "醫療費用", "工作", "損害", "身體", "薪資", "就醫", "傷"],
+            "195": ["精神", "慰撫金", "痛苦", "名譽", "健康", "隱私", "貞操"],
+            "213": ["回復原狀", "給付金錢", "損害發生"],
+            "216": ["填補損害", "所失利益", "預期利益"],
+            "217": ["被害人與有過失", "賠償金減輕", "重大損害原因"]
+        }
+        
+        # Combine text for searching
+        combined_text = f"{accident_facts} {injuries} {compensation_facts}"
+        
+        # Track identified laws
+        identified_laws = set()
+        
+        # Search for keywords
+        for law_number, keywords in legal_mapping.items():
+            if any(keyword in combined_text for keyword in keywords):
+                identified_laws.add(law_number)
+        
+        # Convert to sorted list
+        return sorted(list(identified_laws))
+    
+    def check_law_content(self, accident_facts: str, injuries: str, law_number: str, law_content: str) -> Dict[str, str]:
+        """
+        Check if a specific law is applicable to the case
+        
+        Args:
+            accident_facts: The accident facts from user query
+            injuries: The injuries section from user query
+            law_number: The law number to check
+            law_content: The content of the law
+            
+        Returns:
+            Dictionary with check result and reason
+        """
+        from ts_prompt_check import get_law_content_check_prompt
+        
+        prompt = get_law_content_check_prompt(accident_facts, injuries, law_number, law_content)
+        result = self.call_llm(prompt)
+        
+        # Extract result and reason
+        pass_fail = "fail"  # Default to fail
+        reason = ""
+        
+        if "pass" in result.lower():
+            pass_fail = "pass"
+        
+        reason_match = re.search(r'\[理由\]:(.*?)(?:\n|$)', result, re.DOTALL)
+        if reason_match:
+            reason = reason_match.group(1).strip()
+        else:
+            reason_match = re.search(r'理由:(.*?)(?:\n|$)', result, re.DOTALL)
+            if reason_match:
+                reason = reason_match.group(1).strip()
+        
+        return {
+            "result": pass_fail,
+            "reason": reason
+        }
+    
+    def check_compensation_part1(self, compensation_part1: str, injuries: str, compensation_facts: str, plaintiffs_info: str = "") -> Dict[str, str]:
+        """
+        Check if the generated compensation part 1 matches the injuries and compensation facts
+        
+        Args:
+            compensation_part1: The generated compensation part 1
+            injuries: The injuries section from user query
+            compensation_facts: The compensation facts from user query
+            plaintiffs_info: Information about plaintiffs extracted from input
+            
+        Returns:
+            Dictionary with check result and reason
+        """       
+        prompt = get_compensation_part1_check_prompt(compensation_part1, injuries, compensation_facts, plaintiffs_info)
+        result = self.call_llm(prompt)
+        
+        # Extract result and reason
+        pass_fail = "fail"  # Default to fail
+        reason = ""
+        
+        if "pass" in result.lower():
+            pass_fail = "pass"
+        
+        reason_match = re.search(r'\[理由\]:(.*?)(?:\n|$)', result, re.DOTALL)
+        if reason_match:
+            reason = reason_match.group(1).strip()
+        else:
+            reason_match = re.search(r'理由:(.*?)(?:\n|$)', result, re.DOTALL)
+            if reason_match:
+                reason = reason_match.group(1).strip()
+        
+        return {
+            "result": pass_fail,
+            "reason": reason
+        }
+
     def check_amounts_in_summary(self, summary_section: str, compensation_sums: Dict[str, float]) -> Dict[str, str]:
         """
         Check if all amounts from compensation_sums appear in the summary section
@@ -723,7 +865,7 @@ class RetrievalSystem:
         """
         import re
         # Remove only specific special characters like # and @
-        return re.sub(r'[#@$%^&*~`]+', '', text)
+        return re.sub(r'[#@$%^&*~`\[\]]+', '', text)
     
     def clean_compensation_part(self, text: str) -> str:
         """
@@ -833,18 +975,6 @@ class RetrievalSystem:
         prompt = get_compensation_prompt_part3(compensation_part1, summary_format, plaintiffs_info)
         return self.call_llm(prompt)
         
-    def check_compensation_format(self, final_compensation: str) -> str:
-        """
-        Check if the compensation format is valid
-        
-        Args:
-            final_compensation: The final compensation text
-            
-        Returns:
-            Check result as string
-        """
-        prompt = get_compensation_format_check_prompt(final_compensation)
-        return self.call_llm(prompt)
     
     # Add this method to the RetrievalSystem class in ts_retrieval_system.py
     def check_calculation_tags(self, compensation_part1: str, compensation_part2: str) -> Dict[str, str]:
